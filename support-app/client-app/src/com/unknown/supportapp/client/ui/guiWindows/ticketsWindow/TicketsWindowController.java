@@ -250,6 +250,12 @@ public class TicketsWindowController {
         closedTicketsBox.getSelectionModel().clearSelection();
     }
 
+    @FXML
+    private void logOut(){
+        clearFields();
+        WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.LoginWindow);
+    }
+
     public void setEmail(String email) {
         this.email = email;
         initialize();
@@ -350,5 +356,16 @@ public class TicketsWindowController {
         closedTickets.clear();
         closedTickets.setAll(closed);
         closedTicketsBox.setItems(closedTickets);
+    }
+
+    private void clearFields(){
+        ownedProducts = null;
+        openedTickets = null;
+        closedTickets = null;
+        themeField.clear();
+        textArea.clear();
+        email = null;
+        creation = false;
+        addInfo = false;
     }
 }

@@ -51,5 +51,11 @@ public class StartWindowController {
         button.setStyle("-fx-border-color: transparent; -fx-background-color: #171717; -fx-border-color: #272829");
     }
 
+    @FXML
+    private void logOut(){
+        email = null;
+        WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.LoginWindow);
+    }
+
 }
 

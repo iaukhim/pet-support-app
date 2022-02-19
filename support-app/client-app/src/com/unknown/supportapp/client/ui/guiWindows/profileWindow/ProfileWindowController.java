@@ -135,6 +135,12 @@ public class ProfileWindowController {
         clearFields();
     }
 
+    @FXML
+    private void logOut(){
+        clearFields();
+        WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.LoginWindow);
+    }
+
     private void clearFields() {
         nameField.clear();
         surnameField.clear();

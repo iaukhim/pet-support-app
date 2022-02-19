@@ -61,24 +61,14 @@
    <top>
       <AnchorPane prefHeight="0.0" prefWidth="1065.0" style="-fx-background-color: #272829;" stylesheets="@style.css" BorderPane.alignment="CENTER">
          <children>
-            <MenuBar layoutY="1.0" prefHeight="25.0" prefWidth="807.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="1.0">
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
-                  </items>
-                </Menu>
-              </menus>
+            <MenuBar prefHeight="25.0" prefWidth="807.0">
+               <menus>
+                  <Menu mnemonicParsing="false" text="File">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#logOut" text="Logout" />
+                     </items>
+                  </Menu>
+               </menus>
             </MenuBar>
          </children>
       </AnchorPane>

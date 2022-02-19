@@ -90,6 +90,12 @@ public class ProductsWindowController{
         initTable();
     }
 
+    @FXML
+    private void logOut(){
+        email = null;
+        WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.LoginWindow);
+    }
+
     private void contextDelete(ActionEvent event){
         OwnedProductDto selectedItem = productsTable.getSelectionModel().getSelectedItem();
         ClientServicesFactory.getFactory().getDeleteUserProduct().delete(selectedItem);
