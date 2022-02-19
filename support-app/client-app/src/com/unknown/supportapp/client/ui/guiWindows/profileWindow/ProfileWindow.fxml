@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="582.0" prefWidth="1065.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unknown.supportapp.client.ui.guiWindows.profileWindow.ProfileWindowController">
+   <left>
+      <VBox prefHeight="557.0" prefWidth="160.0" style="-fx-background-color: #272829;" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="productsButton" mnemonicParsing="false" onAction="#productsButtonPressed" onMouseEntered="#mouseEnteredButton" onMouseExited="#mouseExitedButton" prefHeight="80.0" prefWidth="226.0" style="-fx-background-color: #171717; -fx-border-color: #272829;" text="Products" textFill="#ffa700">
+               <font>
+                  <Font size="21.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="32.0">
+                     <image>
+                        <Image url="@resources/icons8-new-product-96-orange.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="profileButton" mnemonicParsing="false" onMouseEntered="#mouseEnteredButton" onMouseExited="#mouseExitedButton" prefHeight="80.0" prefWidth="226.0" style="-fx-background-color: #171717; -fx-border-color: #272829;" text="Profile" textFill="RED">
+               <font>
+                  <Font size="21.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="32.0">
+                     <image>
+                        <Image url="@resources/icons8-person-96-red.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="ticketsButton" mnemonicParsing="false" onAction="#ticketsButtonPressed" onMouseEntered="#mouseEnteredButton" onMouseExited="#mouseExitedButton" prefHeight="80.0" prefWidth="226.0" style="-fx-background-color: #171717; -fx-border-color: #272829;" text="Tickets" textFill="#ffa700">
+               <font>
+                  <Font size="21.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="32.0">
+                     <image>
+                        <Image url="@resources/img.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </VBox>
+   </left>
+   <top>
+      <AnchorPane prefHeight="0.0" prefWidth="1065.0" style="-fx-background-color: #272829;" stylesheets="@style.css" BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar layoutY="1.0" prefHeight="25.0" prefWidth="807.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="1.0">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Delete" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="About" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+         </children>
+      </AnchorPane>
+   </top>
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #363636;" BorderPane.alignment="CENTER">
+         <children>
+            <TextField fx:id="nameField" layoutX="127.0" layoutY="65.0" prefHeight="36.0" prefWidth="193.0" style="-fx-background-color: #787a7d; -fx-text-fill: #dadada;">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </TextField>
+            <Label layoutX="542.0" layoutY="67.0" text="Surnname" textFill="#ffa700">
+               <font>
+                  <Font size="22.0" />
+               </font>
+            </Label>
+            <Label layoutX="61.0" layoutY="67.0" text="Name" textFill="#ffa700">
+               <font>
+                  <Font size="22.0" />
+               </font>
+            </Label>
+            <Label layoutX="61.0" layoutY="147.0" text="Email" textFill="#ffa700">
+               <font>
+                  <Font size="22.0" />
+               </font>
+            </Label>
+            <Label layoutX="546.0" layoutY="147.0" text="Password" textFill="#ffa700">
+               <font>
+                  <Font size="22.0" />
+               </font>
+            </Label>
+            <Label layoutX="2.0" layoutY="216.0" text="Phone number" textFill="#ffa700">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="538.0" layoutY="219.0" text="Date of birth" textFill="#ffa700">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+            <TextField fx:id="surnameField" layoutX="659.0" layoutY="65.0" prefHeight="36.0" prefWidth="193.0" style="-fx-background-color: #787a7d; -fx-text-fill: #dadada;">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </TextField>
+            <TextField fx:id="emailField" layoutX="127.0" layoutY="143.0" prefHeight="36.0" prefWidth="193.0" style="-fx-background-color: #787a7d; -fx-text-fill: #dadada;">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </TextField>
+            <TextField fx:id="phoneNumberField" layoutX="127.0" layoutY="210.0" prefHeight="36.0" prefWidth="193.0" style="-fx-background-color: #787a7d; -fx-text-fill: #dadada;">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </TextField>
+            <PasswordField fx:id="passwordField" layoutX="659.0" layoutY="143.0" prefHeight="36.0" prefWidth="193.0" style="-fx-background-color: #787a7d; -fx-text-fill: #dadada;">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </PasswordField>
+            <Button fx:id="saveButton" layoutX="453.0" layoutY="453.0" mnemonicParsing="false" onAction="#saveButtonPressed" text="Save changes">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Button>
+            <DatePicker fx:id="birthdayField" layoutX="659.0" layoutY="212.0" prefHeight="36.0" prefWidth="193.0" />
+            <Button fx:id="deleteButton" layoutX="280.0" layoutY="453.0" mnemonicParsing="false" onAction="#deleteButtonPressed" text="Delete profile">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+   </center>
+</BorderPane>

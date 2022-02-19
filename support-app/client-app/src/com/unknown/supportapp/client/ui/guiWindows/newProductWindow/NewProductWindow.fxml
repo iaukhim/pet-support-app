@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="LoginWindowPane" maxHeight="720.0" maxWidth="1280.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="281.0" prefWidth="596.0" style="-fx-background-color: #272829;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unknown.supportapp.client.ui.guiWindows.newProductWindow.NewProductWindowController">
+   <children>
+      <Label layoutX="21.0" layoutY="41.0" text="Type" textFill="#ffb153" AnchorPane.bottomAnchor="215.0" AnchorPane.leftAnchor="21.0" AnchorPane.topAnchor="41.0">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Label>
+      <Label layoutX="21.0" layoutY="95.0" prefHeight="32.0" prefWidth="60.0" text="Model" textFill="#ffb153" AnchorPane.bottomAnchor="161.0" AnchorPane.rightAnchor="515.0" AnchorPane.topAnchor="95.0">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Label>
+      <Button fx:id="addButton" layoutX="208.0" layoutY="225.0" mnemonicParsing="false" onAction="#addButtonPressed" prefHeight="25.0" prefWidth="143.0" style="-fx-background-color: #cacccf;" text="Add product" AnchorPane.bottomAnchor="31.0" AnchorPane.rightAnchor="245.0" />
+      <Label layoutX="21.0" layoutY="145.0" prefHeight="32.0" prefWidth="60.0" text="Serial" textFill="#ffb153">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Label>
+      <TextField fx:id="serialField" editable="true" layoutX="88.0" layoutY="144.0" prefHeight="35.0" prefWidth="167.0" style="-fx-background-color: #787a7d; -fx-text-fill: #ffb153;">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </TextField>
+      <ChoiceBox fx:id="typeBox" layoutX="88.0" layoutY="41.0" prefHeight="32.0" prefWidth="167.0" style="-fx-background-color: #787a7d;" />
+      <ChoiceBox fx:id="modelBox" layoutX="88.0" layoutY="92.0" prefHeight="32.0" prefWidth="167.0" style="-fx-background-color: #787a7d;" />
+   </children>
+</AnchorPane>

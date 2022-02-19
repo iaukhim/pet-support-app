@@ -1,0 +1,98 @@
+.menu .label
+{
+    -fx-text-fill: #e8e8e8;
+}
+.text-area, ..text-area .content, .text-area scroll-pane .viewport{
+    -fx-border-color: transparent;
+}
+.text-area .content {
+    -fx-background-color: #878787;
+}
+
+.context-menu
+{
+    -fx-border-color: #272829;
+    -fx-background-color: #272829;
+}
+
+.menu{
+    -fx-background-color:  #272829;
+}
+
+.menu-bar {
+    -fx-background-color: #272829;
+}
+
+.table-view{
+   -fx-background-color: transparent;
+}
+
+.table-view:focused{
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background{
+    -fx-background-color: linear-gradient(#101010 0%, #424141 100%);
+
+
+}
+.table-view .column-header-background .filler {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background .label{
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+
+.table-view .table-cell{
+    -fx-text-fill: white;
+    -fx-padding: 2 0 2 10px;
+    -fx-table-cell-border-color:#757575;
+}
+
+.table-view:row-selection .table-row-cell:filled:hover {
+    -fx-background-color: black;
+    -fx-text-fill: -fx-text-inner-color;
+}
+.table-view:row-selection .table-row-cell:selected {
+    -fx-background-color: black;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
+.table-view .virtual-flow .scroll-bar:vertical,
+.table-view .virtual-flow .scroll-bar:vertical .track,
+.table-view .virtual-flow .scroll-bar:vertical .track-background,
+.table-view .virtual-flow .scroll-bar:horizontal,
+.table-view .virtual-flow .scroll-bar:horizontal .track,
+.table-view .virtual-flow .scroll-bar:horizontal .track-background {
+    -fx-background-color: transparent;
+}
+
+.table-view .virtual-flow .scroll-bar:vertical .thumb{
+    -fx-background-color:  #a6a6a6;
+}
+.table-view .virtual-flow .scroll-bar:horizontal .thumb {
+    -fx-background-color:  #a6a6a6;
+}
+.table-view .corner {
+    -fx-background-color: transparent;
+}
+
+.table-row-cell: odd{
+    -fx-background-color: #636363;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em;
+}
+.table-row-cell: even{
+    -fx-background-color: #4d4d4d;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em;
+}
+
+    
+
