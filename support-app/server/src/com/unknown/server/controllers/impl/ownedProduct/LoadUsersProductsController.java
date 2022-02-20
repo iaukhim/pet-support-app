@@ -1,10 +1,9 @@
 package com.unknown.server.controllers.impl.ownedProduct;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import com.unknown.server.common.Response;
+import com.unknown.server.common.ResponseFactory;
 import com.unknown.server.controllers.Controller;
 import com.unknown.server.services.factory.ServiceFactory;
 import com.unknown.supportapp.common.dto.ownedProduct.OwnedProductDto;
@@ -21,21 +20,10 @@ public class LoadUsersProductsController implements Controller {
         List<OwnedProductDto> productDtos = ServiceFactory.getFactory().getOwnedProductService().loadUsersProducts(email);
         Object[] array = productDtos.toArray();
 
-        Response okResponse = Response.getOkResponse();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode response;
-
-        response = JsonNodeFactory.instance.objectNode();
-        ObjectNode header = response.putObject("response-header");
-        header.put("response-code", okResponse.getCode());
-        ObjectNode body = response.putObject("response-body");
-        body.put("response-message", okResponse.getMessage());
-        body.putPOJO("owned-products", array);
-
-        String responseString = response.toString();
+        JsonNode response = ResponseFactory.getFactory().formResponse(Response.getOkResponse(), "owned-products", array);
 
         try {
-            writer.write(responseString, 0, responseString.length());
+            writer.write(response.toString(), 0, response.toString().length());
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);

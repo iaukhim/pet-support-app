@@ -4,10 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unknown.server.common.Response;
+import com.unknown.server.common.ResponseFactory;
 import com.unknown.server.controllers.Controller;
 import com.unknown.server.services.factory.ServiceFactory;
 import com.unknown.supportapp.common.dto.manager.ManagerDto;
@@ -32,27 +30,12 @@ public class LoginManagerController implements Controller {
         }
 
         result = ServiceFactory.getFactory().getManagerService().login(managerDto);
-
-        Response okResponse = Response.getOkResponse();
-        Response badRequestResponse = Response.getBadRequestResponse();
-        ObjectNode response = null;
+        JsonNode response = null;
 
         if (result) {
-            response = JsonNodeFactory.instance.objectNode();
-            ObjectNode header = response.putObject("response-header");
-            header.put("response-code", okResponse.getCode());
-            ArrayNode body = response.putArray("response-body");
-            ObjectNode bodyObject = JsonNodeFactory.instance.objectNode();
-            bodyObject.put("response-message", okResponse.getMessage());
-            body.add(bodyObject);
+            response = ResponseFactory.getFactory().formResponse(Response.getOkResponse());
         } else {
-            response = JsonNodeFactory.instance.objectNode();
-            ObjectNode header = response.putObject("response-header");
-            header.put("response-code", badRequestResponse.getCode());
-            ArrayNode body = response.putArray("response-body");
-            ObjectNode bodyObject = JsonNodeFactory.instance.objectNode();
-            bodyObject.put("response-message", badRequestResponse.getMessage());
-            body.add(bodyObject);
+            response = ResponseFactory.getFactory().formResponse(Response.getBadRequestResponse());
         }
 
         try {

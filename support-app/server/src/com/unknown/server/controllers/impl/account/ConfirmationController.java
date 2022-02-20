@@ -4,10 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import com.unknown.server.common.Response;
+import com.unknown.server.common.ResponseFactory;
 import com.unknown.server.controllers.Controller;
 import com.unknown.server.services.AccountService;
 import com.unknown.server.services.factory.ServiceFactory;
@@ -33,15 +32,7 @@ public class ConfirmationController implements Controller {
         AccountService accountService = ServiceFactory.getFactory().getAccountService();
         accountService.saveAccount(accountDto);
 
-        Response okResponse = Response.getOkResponse();
-
-        ObjectNode response = JsonNodeFactory.instance.objectNode();
-        ObjectNode header = response.putObject("response-header");
-        header.put("response-code", okResponse.getCode());
-        ArrayNode body = response.putArray("response-body");
-        ObjectNode bodyObject = JsonNodeFactory.instance.objectNode();
-        bodyObject.put("response-message", okResponse.getMessage());
-        body.add(bodyObject);
+        JsonNode response = ResponseFactory.getFactory().formResponse(Response.getOkResponse());
 
         try {
             writer.write(response.toString(), 0, response.toString().length());

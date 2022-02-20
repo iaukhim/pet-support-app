@@ -3,8 +3,7 @@ package com.unknown.server.controllers.impl.account;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.unknown.server.common.ResponseFactory;
 import com.unknown.supportapp.common.dto.acccount.AccountDto;
 import com.unknown.server.common.Response;
 import com.unknown.server.controllers.Controller;
@@ -19,7 +18,6 @@ public class UpdateAccountController implements Controller {
         AccountDto account;
 
         JsonNode accountNode = requestBody.get("account");
-
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -29,15 +27,7 @@ public class UpdateAccountController implements Controller {
             e.printStackTrace();
         }
 
-
-        Response okResponse = Response.getOkResponse();
-
-        ObjectNode response = JsonNodeFactory.instance.objectNode();
-        ObjectNode header = response.putObject("response-header");
-        header.put("response-code", okResponse.getCode());
-        ObjectNode body = response.putObject("response-body");
-        body.put("response-message", okResponse.getMessage());
-
+        JsonNode response = ResponseFactory.getFactory().formResponse(Response.getOkResponse());
 
         try {
             writer.write(response.toString(), 0, response.toString().length());

@@ -16,12 +16,16 @@ public class CheckSerialImpl implements CheckSerialService {
         JsonNode responseHeader = connection.getResponseHeader();
         int responseCode = responseHeader.get("response-code").asInt();
 
-        if(responseCode != 200){
+        if(responseCode == 200){
+            connection.close();
+            return true;
+        }
+        if(responseCode == 400){
+            connection.close();
+            return false;
+        }
+        else {
             throw new RuntimeException("Server error");
         }
-
-        boolean result = connection.getResponseBody().get("result").asBoolean();
-        connection.close();
-        return result;
     }
 }
