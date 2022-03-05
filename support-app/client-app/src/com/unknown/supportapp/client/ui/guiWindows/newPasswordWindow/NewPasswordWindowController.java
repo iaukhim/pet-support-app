@@ -63,7 +63,7 @@ public class NewPasswordWindowController {
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");
-            alert.setContentText("Password changed. Now you can log in system whit your account");
+            alert.setContentText("Password changed. Now you can log in system with your account");
             alert.show();
 
             Scene scene = WindowFactory.getFactory().getScene(WindowConfig.LoginWindow);
