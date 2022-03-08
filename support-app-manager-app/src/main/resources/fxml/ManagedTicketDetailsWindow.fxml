@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="582.0" prefWidth="1065.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unknown.supportapp.manager.ui.guiWindowsControllers.managedTicketDetailsWindow.ManagedTicketDetailsWindowController">
+   <left>
+      <VBox prefHeight="557.0" prefWidth="160.0" style="-fx-background-color: #272829;" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="TicketsButton" mnemonicParsing="false" onAction="#ticketsButtonPressed" onMouseEntered="#mouseEnteredButton" onMouseExited="#mouseExitedButton" prefHeight="80.0" prefWidth="226.0" style="-fx-background-color: #171717;" text="Tickets" textFill="RED">
+               <font>
+                  <Font size="21.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../icons/conversation-red.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </VBox>
+   </left>
+   <top>
+      <AnchorPane prefHeight="0.0" prefWidth="1065.0" style="-fx-background-color: #272829;" BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar prefHeight="25.0" prefWidth="807.0">
+               <menus>
+                  <Menu mnemonicParsing="false" text="File">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#logOut" text="Logout" />
+                     </items>
+                  </Menu>
+               </menus>
+            </MenuBar>
+         </children>
+      </AnchorPane>
+   </top>
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #363636;" BorderPane.alignment="CENTER">
+         <children>
+            <TextArea fx:id="textArea" editable="false" layoutX="10.0" layoutY="118.0" prefHeight="396.0" prefWidth="881.0" style="-fx-text-fill: white;" stylesheets="@../css/unAssignedTicketWindow.css" wrapText="true">
+               <font>
+                  <Font size="16.0" />
+               </font></TextArea>
+            <TextField fx:id="themeField" editable="false" layoutX="97.0" layoutY="79.0" prefHeight="25.0" prefWidth="792.0" style="-fx-background-color: #878787; -fx-text-fill: white;" />
+            <Label fx:id="themeLabel" layoutX="45.0" layoutY="81.0" text="Theme" textFill="#e4e4e4">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <ComboBox fx:id="productBox" disable="true" layoutX="726.0" layoutY="23.0" prefWidth="150.0" promptText="Product" stylesheets="@../css/unAssignedTicketWindow.css" visibleRowCount="5" />
+            <Button fx:id="addInfoTicketButton" layoutX="387.0" layoutY="522.0" mnemonicParsing="false" onAction="#addInfoTicketButtonPressed" prefHeight="27.0" prefWidth="128.0" text="Add info" />
+            <Label layoutX="661.0" layoutY="25.0" text="Product" textFill="#dadada">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+         </children></AnchorPane>
+   </center>
+   <stylesheets>
+      <URL value="@../css/unAssignedTicketWindow.css" />
+      <URL value="@../css/managedTicketsDetails.css" />
+   </stylesheets>
+</BorderPane>

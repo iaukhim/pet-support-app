@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.unknown</groupId>
+    <artifactId>support-app</artifactId>
+    <version>1.0.1</version>
+    <modules>
+        <module>support-app-server</module>
+        <module>support-app-common</module>
+        <module>support-app-utils</module>
+        <module>support-app-client-common</module>
+        <module>support-app-manager-app</module>
+        <module>support-app-client-app</module>
+    </modules>
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+
+        <commons.dbcp2.version>2.9.0</commons.dbcp2.version>
+        <jackson.databind.version>2.13.2</jackson.databind.version>
+        <commons.lang3.version>3.12.0</commons.lang3.version>
+        <javax.mail.version>1.6.2</javax.mail.version>
+        <mysql.connector.j.version>8.0.28</mysql.connector.j.version>
+        <jackson.core.version>2.13.2</jackson.core.version>
+        <jackson.datatype.jsr310.version>2.13.2</jackson.datatype.jsr310.version>
+        <apache.commons.validator.version>1.7</apache.commons.validator.version>
+        <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+        <javafx.controls.version>17.0.1</javafx.controls.version>
+        <javafx.fxml.version>17.0.1</javafx.fxml.version>
+
+    </properties>
+    <packaging>pom</packaging>
+</project>
