@@ -21,12 +21,9 @@ public class ConfirmationCodeServiceImpl implements ConfirmationCodeService {
             throw new RuntimeException("Server-error");
         }
 
-        String confirmationCode = null;
 
         JsonNode responseBody = connection.getResponseBody();
-        for (JsonNode responseObj : responseBody) {
-            confirmationCode = responseObj.get("confirmation-code").asText();
-        }
+        String confirmationCode = responseBody.get("confirmation-code").asText();
         connection.close();
         return confirmationCode;
     }

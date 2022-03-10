@@ -16,6 +16,16 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class LogInController implements Controller {
+
+    private AccountService service;
+
+    public LogInController() {
+    }
+
+    public LogInController(AccountService service) {
+        this.service = service;
+    }
+
     @Override
     public void process(BufferedWriter writer, JsonNode requestBody) {
         boolean result = false;
@@ -29,8 +39,7 @@ public class LogInController implements Controller {
             throw new RuntimeException(e);
         }
 
-        AccountService accountService = ServiceFactory.getFactory().getAccountService();
-        result = accountService.logIn(accountDto);
+        result = service.logIn(accountDto);
 
         JsonNode response = null;
 

@@ -12,14 +12,23 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class CheckAccountExistenceController implements Controller {
+
+    private  AccountService service;
+
+    public CheckAccountExistenceController() {
+    }
+
+    public CheckAccountExistenceController(AccountService service) {
+        this.service = service;
+    }
+
     @Override
     public void process(BufferedWriter writer, JsonNode requestBody) {
         boolean result = false;
 
         String email = requestBody.get("email").asText();
 
-        AccountService accountService = ServiceFactory.getFactory().getAccountService();
-        result = accountService.checkExistence(email);
+        result = service.checkExistence(email);
 
         JsonNode response;
 

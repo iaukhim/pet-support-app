@@ -44,5 +44,10 @@
             <artifactId>jackson-core</artifactId>
             <version>${jackson.core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.16</version>
+        </dependency>
     </dependencies>
 </project>

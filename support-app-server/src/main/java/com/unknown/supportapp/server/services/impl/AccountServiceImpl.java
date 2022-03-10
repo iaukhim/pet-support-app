@@ -4,7 +4,6 @@ import com.unknown.supportapp.server.entities.converters.AccountConverter;
 import com.unknown.supportapp.server.services.AccountService;
 import com.unknown.supportapp.common.dto.acccount.AccountDto;
 import com.unknown.supportapp.server.dao.AccountDao;
-import com.unknown.supportapp.server.dao.factory.DaoFactory;
 import com.unknown.supportapp.server.entities.Account;
 import com.unknown.supportapp.server.mail.MailService;
 
@@ -13,24 +12,30 @@ import java.util.List;
 
 public class AccountServiceImpl implements AccountService {
 
+    private AccountDao accountDao;
+
+    public AccountServiceImpl() {
+    }
+
+    public AccountServiceImpl(AccountDao accountDao) {
+        this.accountDao = accountDao;
+    }
+
     @Override
     public void update(AccountDto accountDto) {
         Account account = new AccountConverter().convertToEntity(accountDto);
-        DaoFactory.getFactory().getAccountDao().update(account);
+        accountDao.update(account);
     }
 
     @Override
     public void delete(int id) {
-        DaoFactory.getFactory().getAccountDao().delete(id);
+        accountDao.delete(id);
     }
 
     @Override
     public void saveAccount(AccountDto accountDto) {
-        Account account = new Account();
-        account.setEmail(accountDto.getEmail());
-        account.setPassword(accountDto.getPassword());
-
-        DaoFactory.getFactory().getAccountDao().save(account);
+        Account account = new AccountConverter().convertToEntity(accountDto);
+        accountDao.save(account);
     }
 
     @Override
@@ -38,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
         if (!checkExistence(email)){
             return null;
         }
-        Account account = DaoFactory.getFactory().getAccountDao().loadByEmail(email);
+        Account account = accountDao.loadByEmail(email);
 
         AccountDto accountDto = new AccountConverter().convertToDto(account);
         return accountDto;
@@ -51,10 +56,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean logIn(AccountDto accountDto) {
-        AccountDao accountDao = DaoFactory.getFactory().getAccountDao();
-
         boolean result = accountDao.logIn(new Account(accountDto.getEmail(), accountDto.getPassword()));
-
         return result;
     }
 
@@ -67,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean checkExistence(String email) {
-        boolean result = DaoFactory.getFactory().getAccountDao().checkAccountExistence(email);
+        boolean result = accountDao.checkAccountExistence(email);
         return result;
     }
 
@@ -79,17 +81,14 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void changePassword(AccountDto accountDto) {
-        Account account = new Account();
-        account.setEmail(accountDto.getEmail());
-        account.setPassword(accountDto.getPassword());
-
-        DaoFactory.getFactory().getAccountDao().changePassword(account);
+        Account account = new AccountConverter().convertToEntity(accountDto);
+        accountDao.changePassword(account);
 
     }
 
     @Override
     public int loadIdByEmail(String email) {
-        int id = DaoFactory.getFactory().getAccountDao().loadIdByEmail(email);
+        int id = accountDao.loadIdByEmail(email);
         return id;
     }
 }

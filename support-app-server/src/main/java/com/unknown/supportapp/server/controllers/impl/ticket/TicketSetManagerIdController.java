@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unknown.supportapp.server.common.Response;
 import com.unknown.supportapp.server.common.ResponseFactory;
 import com.unknown.supportapp.server.controllers.Controller;
+import com.unknown.supportapp.server.services.TicketService;
 import com.unknown.supportapp.server.services.factory.ServiceFactory;
 import com.unknown.supportapp.common.dto.ticket.TicketDto;
 
@@ -13,6 +14,16 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class TicketSetManagerIdController implements Controller {
+
+    private TicketService service;
+
+    public TicketSetManagerIdController() {
+    }
+
+    public TicketSetManagerIdController(TicketService service) {
+        this.service = service;
+    }
+
     @Override
     public void process(BufferedWriter writer, JsonNode requestBody) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -23,7 +34,7 @@ public class TicketSetManagerIdController implements Controller {
             e.printStackTrace();
         }
 
-        ServiceFactory.getFactory().getTicketService().setManagerId(ticket);
+        service.setManagerId(ticket);
         JsonNode response = ResponseFactory.getFactory().formResponse(Response.getOkResponse());
 
         try {

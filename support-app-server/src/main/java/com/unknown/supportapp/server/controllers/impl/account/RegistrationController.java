@@ -12,12 +12,21 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class RegistrationController implements Controller {
+
+    private AccountService service;
+
+    public RegistrationController() {
+    }
+
+    public RegistrationController(AccountService service) {
+        this.service = service;
+    }
+
     @Override
     public void process(BufferedWriter writer, JsonNode requestBody) {
         String email = requestBody.get("email").asText();
 
-        AccountService accountService = ServiceFactory.getFactory().getAccountService();
-        String confirmationCode = accountService.registration(email);
+        String confirmationCode = service.registration(email);
 
         JsonNode response = ResponseFactory.getFactory().formResponse(Response.getOkResponse(), "confirmation-code", confirmationCode);
 

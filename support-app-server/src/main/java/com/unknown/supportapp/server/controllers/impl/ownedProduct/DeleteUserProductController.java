@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unknown.supportapp.server.common.Response;
 import com.unknown.supportapp.server.common.ResponseFactory;
 import com.unknown.supportapp.server.controllers.Controller;
+import com.unknown.supportapp.server.services.OwnedProductService;
 import com.unknown.supportapp.server.services.factory.ServiceFactory;
 import com.unknown.supportapp.common.dto.ownedProduct.OwnedProductDto;
 
@@ -14,6 +15,16 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class DeleteUserProductController implements Controller {
+
+    private OwnedProductService service;
+
+    public DeleteUserProductController() {
+    }
+
+    public DeleteUserProductController(OwnedProductService service) {
+        this.service = service;
+    }
+
     @Override
     public void process(BufferedWriter writer, JsonNode requestBody) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -26,7 +37,7 @@ public class DeleteUserProductController implements Controller {
             throw new RuntimeException(e);
         }
 
-        ServiceFactory.getFactory().getOwnedProductService().deleteUserProduct(productDto);
+        service.deleteUserProduct(productDto);
         JsonNode response = ResponseFactory.getFactory().formResponse(Response.getOkResponse());
 
         try {

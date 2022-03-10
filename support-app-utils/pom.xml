@@ -11,6 +11,8 @@
 
     <artifactId>support-app-utils</artifactId>
 
+    <packaging>jar</packaging>
+
     <properties>
     </properties>
     <dependencies>

@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>support-app-client-common</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
     </properties>

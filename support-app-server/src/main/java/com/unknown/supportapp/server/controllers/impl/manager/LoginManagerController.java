@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unknown.supportapp.server.common.Response;
 import com.unknown.supportapp.server.common.ResponseFactory;
 import com.unknown.supportapp.server.controllers.Controller;
+import com.unknown.supportapp.server.services.ManagerService;
 import com.unknown.supportapp.server.services.factory.ServiceFactory;
 import com.unknown.supportapp.common.dto.manager.ManagerDto;
 
@@ -13,6 +14,16 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 public class LoginManagerController implements Controller {
+
+    private ManagerService service;
+
+    public LoginManagerController() {
+    }
+
+    public LoginManagerController(ManagerService service) {
+        this.service = service;
+    }
+
     @Override
     public void process(BufferedWriter writer, JsonNode requestBody) {
         boolean result = false;
@@ -26,7 +37,7 @@ public class LoginManagerController implements Controller {
             throw new RuntimeException(e);
         }
 
-        result = ServiceFactory.getFactory().getManagerService().login(managerDto);
+        result = service.login(managerDto);
         JsonNode response = null;
 
         if (result) {

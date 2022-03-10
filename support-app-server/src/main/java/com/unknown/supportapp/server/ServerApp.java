@@ -5,10 +5,11 @@ import com.unknown.supportapp.server.common.Response;
 import com.unknown.supportapp.server.common.ResponseFactory;
 import com.unknown.supportapp.server.common.ServerSettings;
 import com.unknown.supportapp.server.controllers.Controller;
-import com.unknown.supportapp.server.controllers.ControllerFactory;
 import com.unknown.supportapp.server.db.mysql.DbConnectionManager;
 import com.unknown.supportapp.server.common.ClientConnection;
 import com.unknown.supportapp.server.exceptions.ServerStartFailedException;
+import com.unknown.supportapp.server.spring.AppContext;
+import org.springframework.context.ApplicationContext;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -38,7 +39,8 @@ public class ServerApp {
                 clientConnection = new ClientConnection(clientRequest);
                 String requestType = clientConnection.getRequestType();
 
-                Controller controller = ControllerFactory.getFactory().getControllerByName(requestType);
+                ApplicationContext context = AppContext.getAppContext().getContext();
+                Controller controller = context.getBean(requestType, Controller.class);
                 controller.process(clientConnection.getWriter(), clientConnection.getRequestBody());
 
             } catch (Exception e) {
