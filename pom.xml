@@ -29,6 +29,7 @@
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <javafx.controls.version>17.0.1</javafx.controls.version>
         <javafx.fxml.version>17.0.1</javafx.fxml.version>
+        <spring-context.version>5.3.16</spring-context.version>
 
     </properties>
     <packaging>pom</packaging>
