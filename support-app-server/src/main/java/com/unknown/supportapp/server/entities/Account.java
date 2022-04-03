@@ -1,10 +1,16 @@
 package com.unknown.supportapp.server.entities;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
+
+@Entity
+@Table(name = "accounts", schema = "pet_db")
 public class Account {
-    private int Id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private String email;
 
@@ -14,8 +20,10 @@ public class Account {
 
     private String surname;
 
+    @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     public Account() {
@@ -27,7 +35,7 @@ public class Account {
     }
 
     public Account(int id, String email, String password, String name, String surname, String phoneNumber, LocalDate dateOfBirth) {
-        Id = id;
+        this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
@@ -37,11 +45,11 @@ public class Account {
     }
 
     public int getId() {
-        return Id;
+        return id;
     }
 
     public void setId(int id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getName() {
@@ -97,12 +105,12 @@ public class Account {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return Id == account.Id && Objects.equals(email, account.email) && Objects.equals(password, account.password) && Objects.equals(name, account.name) && Objects.equals(surname, account.surname) && Objects.equals(phoneNumber, account.phoneNumber) && Objects.equals(dateOfBirth, account.dateOfBirth);
+        return id == account.id && Objects.equals(email, account.email) && Objects.equals(password, account.password) && Objects.equals(name, account.name) && Objects.equals(surname, account.surname) && Objects.equals(phoneNumber, account.phoneNumber) && Objects.equals(dateOfBirth, account.dateOfBirth);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Id, email, password, name, surname, phoneNumber, dateOfBirth);
+        return Objects.hash(id, email, password, name, surname, phoneNumber, dateOfBirth);
     }
 
     @Override

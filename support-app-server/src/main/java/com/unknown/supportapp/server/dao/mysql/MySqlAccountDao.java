@@ -4,19 +4,26 @@ import com.unknown.supportapp.server.dao.AccountDao;
 import com.unknown.supportapp.server.db.mysql.DbConnectionManager;
 import com.unknown.supportapp.server.entities.Account;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MySqlAccountDao implements AccountDao {
 
+    private EntityManagerFactory emf;
+
     public MySqlAccountDao() {
 
+    }
+
+    public MySqlAccountDao(EntityManagerFactory emf) {
+        this.emf = emf;
     }
 
     private final String LOG_IN = "SELECT `email`, `password` FROM pet_db.accounts WHERE `email` = ? AND `password` = ?";
@@ -30,227 +37,149 @@ public class MySqlAccountDao implements AccountDao {
 
     @Override
     public boolean logIn(Account account) {
-        boolean result = false;
-        Connection connection = DbConnectionManager.getManager().getConnection();
+        boolean result = true;
 
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-
+        EntityManager entityManager = emf.createEntityManager();
+        entityManager.joinTransaction();
+        Query query = entityManager.createQuery("select a  from Account as a WHERE a.email = :email and a.password = :password", Account.class);
+        query.setParameter("email", account.getEmail());
+        query.setParameter("password", account.getPassword());
         try {
-            preparedStatement = connection.prepareStatement(LOG_IN);
-            preparedStatement.setString(1, account.getEmail());
-            preparedStatement.setString(2, account.getPassword());
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                result = true;
+            if(query.getResultList().isEmpty()){
+                result = false;
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in AccountDao", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exciption", e);
         }
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
+        entityManager.close();
         return result;
     }
 
     @Override
     public List<Account> loadAll() {
-        Connection connection = DbConnectionManager.getManager().getConnection();
 
-        List<Account> accounts = new ArrayList<>();
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
+        EntityManager entityManager = emf.createEntityManager();
+        entityManager.joinTransaction();
+        TypedQuery<Account> query = entityManager.createQuery("select a from Account as a", Account.class);
         try {
-            preparedStatement = connection.prepareStatement(LOAD_ALL);
-            preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                String email = resultSet.getString("email");
-                String password = resultSet.getString("password");
-
-                Account account = new Account();
-                account.setEmail(email);
-                account.setPassword(password);
-
-                accounts.add(account);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in AccountDao", e);
+            return query.getResultList();
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exciption", e);
+        } finally {
+            entityManager.close();
         }
-
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
-        return accounts;
     }
 
     @Override
     public Account loadByEmail(String email) {
 
-        Account account = new Account();
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-
+        EntityManager entityManager = emf.createEntityManager();
+        entityManager.joinTransaction();
+        TypedQuery<Account> query = entityManager.createQuery("select a from Account as a where a.email = :email", Account.class);
+        query.setParameter("email", email);
         try {
-            preparedStatement = connection.prepareStatement(LOAD_ACCOUNT_BY_EMAIL);
-            preparedStatement.setString(1, email);
-            resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                String accountEmail = resultSet.getString("email");
-                String accountPassword = resultSet.getString("password");
-                String name = resultSet.getString("name");
-                String surname = resultSet.getString("surname");
-                String phoneNumber = resultSet.getString("phone_number");
-                String dateOfBirth = resultSet.getString("date_of_birth");
-                int id = resultSet.getInt("id");
-
-                account.setEmail(accountEmail);
-                account.setPassword(accountPassword);
-                account.setName(name);
-                account.setSurname(surname);
-                account.setPhoneNumber(phoneNumber);
-                account.setId(id);
-                if (dateOfBirth != null) {
-                    account.setDateOfBirth(LocalDate.parse(dateOfBirth, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL Exception in AccountDao", e);
+            return query.getSingleResult();
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exciption", e);
+        } finally {
+            entityManager.close();
         }
-
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
-        return account;
     }
 
 
     @Override
     public void delete(int id) {
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        PreparedStatement preparedStatement = null;
-
+        EntityManager entityManager = emf.createEntityManager();
+        entityManager.joinTransaction();
         try {
-            preparedStatement = connection.prepareStatement(DELETE_ACCOUNT);
-            preparedStatement.setInt(1, id);
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in AccountDao", e);
+            Account account = entityManager.find(Account.class, id);
+            entityManager.remove(account);
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exciption", e);
         }
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement);
+        finally {
+            entityManager.close();
+        }
     }
 
     @Override
     public void save(Account account) {
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        PreparedStatement preparedStatement = null;
+        EntityManager entityManager = emf.createEntityManager();
+        entityManager.joinTransaction();
 
         try {
-            preparedStatement = connection.prepareStatement(SAVE_ACCOUNT);
-            preparedStatement.setString(1, account.getEmail());
-            preparedStatement.setString(2, account.getPassword());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in AccountDao", e);
+            entityManager.persist(account);
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exciption", e);
+        } finally {
+            entityManager.close();
         }
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement);
     }
 
     @Override
     public boolean checkAccountExistence(String email) {
         boolean result = false;
-        Connection connection = DbConnectionManager.getManager().getConnection();
 
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-
+        EntityManager entityManager = emf.createEntityManager();
+        entityManager.joinTransaction();
+        TypedQuery<Account> query = entityManager.createQuery("select a from Account as a where a.email = :email", Account.class);
+        query.setParameter("email", email);
         try {
-            preparedStatement = connection.prepareStatement(LOAD_ACCOUNT_BY_EMAIL);
-            preparedStatement.setString(1, email);
-            resultSet = preparedStatement.executeQuery();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in AccountDao", e);
-        }
-
-        try {
-            if (resultSet.next()) {
+            if (!query.getResultList().isEmpty()) {
                 result = true;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exciption", e);
+        } finally {
+            entityManager.close();
         }
-
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
         return result;
     }
 
     @Override
     public void changePassword(Account account) {
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        PreparedStatement preparedStatement = null;
-
+        EntityManager entityManager = emf.createEntityManager();
+        entityManager.joinTransaction();
+        Query query = entityManager.createQuery("UPDATE Account as a SET a.password = :password WHERE a.email = :email");
+        query.setParameter("password", account.getPassword());
+        query.setParameter("email", account.getEmail());
         try {
-            preparedStatement = connection.prepareStatement(CHANGE_PASSWORD);
-            preparedStatement.setString(1, account.getPassword());
-            preparedStatement.setString(2, account.getEmail());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in AccountDao", e);
+            query.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exciption", e);
+        } finally {
+            entityManager.close();
         }
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement);
     }
 
     @Override
     public int loadIdByEmail(String email) {
         int id = -1;
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-
+        EntityManager entityManager = emf.createEntityManager();
+        entityManager.joinTransaction();
+        TypedQuery<Account> query = entityManager.createQuery("select a from Account as a WHERE a.email = :email", Account.class);
+        query.setParameter("email", email);
         try {
-            preparedStatement = connection.prepareStatement(LOAD_ID_BY_EMAIL);
-            preparedStatement.setString(1, email);
-            resultSet = preparedStatement.executeQuery();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in AccountDao", e);
+            id = query.getSingleResult().getId();
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exciption", e);
+        } finally {
+            entityManager.close();
         }
-
-        try {
-            if (resultSet.next()) {
-                id = resultSet.getInt("id");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
         return id;
-
     }
 
     @Override
     public void update(Account account) {
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        PreparedStatement preparedStatement = null;
+        EntityManager entityManager = emf.createEntityManager();
+        entityManager.joinTransaction();
 
         try {
-            preparedStatement = connection.prepareStatement(UPDATE);
-            preparedStatement.setString(1, account.getEmail());
-            preparedStatement.setString(2, account.getPassword());
-            preparedStatement.setString(3, account.getName());
-            preparedStatement.setString(4, account.getSurname());
-            preparedStatement.setString(5, account.getPhoneNumber());
-            preparedStatement.setString(6, account.getDateOfBirth().toString());
-            preparedStatement.setInt(7, account.getId());
-
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in AccountDao", e);
+            entityManager.merge(account);
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exciption", e);
+        } finally {
+            entityManager.close();
         }
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement);
     }
 }

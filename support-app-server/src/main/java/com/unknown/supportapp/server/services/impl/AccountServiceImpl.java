@@ -6,10 +6,11 @@ import com.unknown.supportapp.common.dto.acccount.AccountDto;
 import com.unknown.supportapp.server.dao.AccountDao;
 import com.unknown.supportapp.server.entities.Account;
 import com.unknown.supportapp.server.mail.MailService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
+@Transactional
 public class AccountServiceImpl implements AccountService {
 
     private AccountDao accountDao;
@@ -53,6 +54,7 @@ public class AccountServiceImpl implements AccountService {
     public List<AccountDto> loadAll() {
         return null;
     }
+
 
     @Override
     public boolean logIn(AccountDto accountDto) {

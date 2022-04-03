@@ -33,7 +33,7 @@ public class UpdateAccountController implements Controller {
 
         try {
             account = objectMapper.readValue(accountNode.toString(), AccountDto.class);
-            ServiceFactory.getFactory().getAccountService().update(account);
+            service.update(account);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

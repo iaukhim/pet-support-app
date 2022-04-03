@@ -37,6 +37,10 @@ public class DbConnectionManager {
         return manager;
     }
 
+    public BasicDataSource getPool() {
+        return pool;
+    }
+
     private void  setPool(){
         BasicDataSource pool = new BasicDataSource();
 
@@ -50,6 +54,7 @@ public class DbConnectionManager {
 
         this.pool = pool;
     }
+
 
     public Connection getConnection() {
         try {

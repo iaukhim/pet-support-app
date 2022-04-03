@@ -32,6 +32,7 @@ public class ServerApp {
         ByteArrayOutputStream memoryOs = null;
         Socket clientRequest = null;
         ClientConnection clientConnection = null;
+        ApplicationContext context = AppContext.getAppContext().getContext();
 
         while (true) {
             try {
@@ -39,7 +40,7 @@ public class ServerApp {
                 clientConnection = new ClientConnection(clientRequest);
                 String requestType = clientConnection.getRequestType();
 
-                ApplicationContext context = AppContext.getAppContext().getContext();
+
                 Controller controller = context.getBean(requestType, Controller.class);
                 controller.process(clientConnection.getWriter(), clientConnection.getRequestBody());
 
