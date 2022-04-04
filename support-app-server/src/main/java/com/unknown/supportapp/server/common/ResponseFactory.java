@@ -38,6 +38,16 @@ public class ResponseFactory {
         body.put("response-message", response.getMessage());
         return jsonResponse;
     }
+    public JsonNode formResponse(Response response,Exception e) {
+        ObjectNode jsonResponse = JsonNodeFactory.instance.objectNode();
+        ObjectNode header = jsonResponse.putObject("response-header");
+        header.put("response-code", response.getCode());
+        ObjectNode body = jsonResponse.putObject("response-body");
+        body.put("error-title", response.getMessage());
+        body.put("error-description", e.getMessage());
+        return jsonResponse;
+    }
+
 
     public static ResponseFactory getFactory() {
         return factory;

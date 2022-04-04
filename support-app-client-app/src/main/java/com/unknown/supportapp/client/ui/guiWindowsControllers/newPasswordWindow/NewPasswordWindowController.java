@@ -1,5 +1,6 @@
 package com.unknown.supportapp.client.ui.guiWindowsControllers.newPasswordWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.ui.factory.WindowConfig;
 import com.unknown.supportapp.client.ui.factory.WindowFactory;
 import com.unknown.supportapp.client.common.service.factory.ClientServicesFactory;
@@ -56,24 +57,31 @@ public class NewPasswordWindowController {
 
     @FXML
     void nextButtonPressed(ActionEvent event) {
-        String password = passwordField.getText();
+        try {
+            String password = passwordField.getText();
 
-        if (AccountUtils.checkPasswordFormat(password)){
-            ClientServicesFactory.getFactory().getChangePasswordService().change(email, password);
+            if (AccountUtils.checkPasswordFormat(password)){
+                ClientServicesFactory.getFactory().getChangePasswordService().change(email, password);
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setContentText("Password changed. Now you can log in system with your account");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setContentText("Password changed. Now you can log in system with your account");
+                alert.show();
+
+                Scene scene = WindowFactory.getFactory().getScene(WindowConfig.LoginWindow);
+                WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, scene);
+
+                passwordField.clear();
+                return;
+            }
+            else {
+                WindowFactory.getFactory().showStage(WindowConfig.WrongEmailOrPasswordWindow);
+            }
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
             alert.show();
-
-            Scene scene = WindowFactory.getFactory().getScene(WindowConfig.LoginWindow);
-            WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, scene);
-
-            passwordField.clear();
-            return;
-        }
-        else {
-            WindowFactory.getFactory().showStage(WindowConfig.WrongEmailOrPasswordWindow);
         }
     }
 }

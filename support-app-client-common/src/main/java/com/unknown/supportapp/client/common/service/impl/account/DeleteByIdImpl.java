@@ -1,13 +1,18 @@
 package com.unknown.supportapp.client.common.service.impl.account;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.unknown.supportapp.client.common.exception.CustomServerError;
+import com.unknown.supportapp.client.common.exception.ExceptionHandler;
 import com.unknown.supportapp.client.common.net.RequestFactory;
 import com.unknown.supportapp.client.common.net.ServerConnection;
 import com.unknown.supportapp.client.common.service.account.DeleteById;
 
 public class DeleteByIdImpl implements DeleteById {
+
+    private ExceptionHandler exceptionHandler;
+
     @Override
-    public void delete(int id) {
+    public void delete(int id) throws CustomServerError {
 
         ServerConnection connection = new ServerConnection();
 
@@ -18,10 +23,9 @@ public class DeleteByIdImpl implements DeleteById {
         int responseCode = responseHeader.get("response-code").asInt();
         connection.close();
 
-        if(responseCode == 200){
-            return;
+        if (responseCode >= 500){
+            exceptionHandler = new ExceptionHandler();
+            exceptionHandler.handleResponse(connection.getResponseBody());
         }
-
-        throw new RuntimeException("Server error");
     }
 }

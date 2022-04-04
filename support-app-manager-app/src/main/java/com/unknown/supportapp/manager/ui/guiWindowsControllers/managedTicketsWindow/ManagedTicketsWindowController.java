@@ -1,5 +1,6 @@
 package com.unknown.supportapp.manager.ui.guiWindowsControllers.managedTicketsWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.common.service.factory.ClientServicesFactory;
 import com.unknown.supportapp.common.dto.ticket.TicketDto;
 import com.unknown.supportapp.manager.ui.factory.WindowFactory;
@@ -12,10 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -37,33 +35,48 @@ public class ManagedTicketsWindowController {
     private TableColumn<TicketDto, String> themeColumn;
 
     private void init() {
-        ticketsTable.setRowFactory(tv -> {
-            TableRow<TicketDto> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2 && (!row.isEmpty())) {
-                    TicketDto item = row.getItem();
+        try {
+            ticketsTable.setRowFactory(tv -> {
+                TableRow<TicketDto> row = new TableRow<>();
+                row.setOnMouseClicked(event -> {
+                    if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2 && (!row.isEmpty())) {
+                        TicketDto item = row.getItem();
 
-                    ManagedTicketDetailsWindowController controller = WindowFactory.getFactory().getController(WindowConfig.ManagedTicketsDetailsWindow);
-                    controller.setTicket(item);
-                    controller.setEmail(email);
-                    WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.ManagedTicketsDetailsWindow);
+                        ManagedTicketDetailsWindowController controller = WindowFactory.getFactory().getController(WindowConfig.ManagedTicketsDetailsWindow);
+                        controller.setTicket(item);
+                        controller.setEmail(email);
+                        WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.ManagedTicketsDetailsWindow);
+                    }
+                });
+                return row;
+            });
+            themeColumn.setCellValueFactory(new PropertyValueFactory<>("theme"));
+            modelColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<TicketDto, String>, ObservableValue<String>>() {
+                @Override
+                public ObservableValue<String> call(TableColumn.CellDataFeatures<TicketDto, String> param) {
+                    String model = null;
+                    try {
+                        model = ClientServicesFactory.getFactory().getOwnedProductLoadModelByIdService().load(param.getValue().getProductId());
+                    } catch (CustomServerError e) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText(e.getErrorTitle());
+                        alert.setContentText(e.getErrorDescription());
+                        alert.show();
+                    }
+                    return new SimpleStringProperty(model);
                 }
             });
-            return row;
-        });
-        themeColumn.setCellValueFactory(new PropertyValueFactory<>("theme"));
-        modelColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<TicketDto, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<TicketDto, String> param) {
-                String model = ClientServicesFactory.getFactory().getOwnedProductLoadModelByIdService().load(param.getValue().getProductId());
-                return new SimpleStringProperty(model);
-            }
-        });
 
-        int managerId = ClientServicesFactory.getFactory().getManagerLoadIdByEmailService().load(email);
-        List<TicketDto> load = ClientServicesFactory.getFactory().getLoadManagedTicketsService().load(managerId);
-        ObservableList<TicketDto> ticketDtos = FXCollections.observableArrayList(load);
-        ticketsTable.setItems(ticketDtos);
+            int managerId = ClientServicesFactory.getFactory().getManagerLoadIdByEmailService().load(email);
+            List<TicketDto> load = ClientServicesFactory.getFactory().getLoadManagedTicketsService().load(managerId);
+            ObservableList<TicketDto> ticketDtos = FXCollections.observableArrayList(load);
+            ticketsTable.setItems(ticketDtos);
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
     @FXML
@@ -92,10 +105,17 @@ public class ManagedTicketsWindowController {
     }
 
     public void refresh() {
-        int managerId = ClientServicesFactory.getFactory().getManagerLoadIdByEmailService().load(email);
-        List<TicketDto> load = ClientServicesFactory.getFactory().getLoadManagedTicketsService().load(managerId);
-        ObservableList<TicketDto> ticketDtos = FXCollections.observableArrayList(load);
-        ticketsTable.setItems(ticketDtos);
+        try {
+            int managerId = ClientServicesFactory.getFactory().getManagerLoadIdByEmailService().load(email);
+            List<TicketDto> load = ClientServicesFactory.getFactory().getLoadManagedTicketsService().load(managerId);
+            ObservableList<TicketDto> ticketDtos = FXCollections.observableArrayList(load);
+            ticketsTable.setItems(ticketDtos);
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
     @FXML

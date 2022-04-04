@@ -1,5 +1,6 @@
 package com.unknown.supportapp.client.ui.guiWindowsControllers.productsWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.ui.factory.WindowConfig;
 import com.unknown.supportapp.client.ui.factory.WindowFactory;
 import com.unknown.supportapp.client.ui.guiWindowsControllers.editProductWindow.EditProductWindowController;
@@ -97,9 +98,16 @@ public class ProductsWindowController{
     }
 
     private void contextDelete(ActionEvent event){
-        OwnedProductDto selectedItem = productsTable.getSelectionModel().getSelectedItem();
-        ClientServicesFactory.getFactory().getDeleteUserProduct().delete(selectedItem);
-        initializeWindow();
+        try {
+            OwnedProductDto selectedItem = productsTable.getSelectionModel().getSelectedItem();
+            ClientServicesFactory.getFactory().getDeleteUserProduct().delete(selectedItem);
+            initializeWindow();
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
     private void contextUpdate(ActionEvent event){
@@ -123,23 +131,30 @@ public class ProductsWindowController{
     }
 
     private void initTable(){
-        productsTable.prefWidthProperty().bind(mainPane.widthProperty());
-        productsTable.setRowFactory(tv -> {
-            TableRow<OwnedProductDto> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.SECONDARY && (!row.isEmpty())) {
-                    contextMenu.show(row, event.getScreenX(), event.getScreenY());
-                }
+        try {
+            productsTable.prefWidthProperty().bind(mainPane.widthProperty());
+            productsTable.setRowFactory(tv -> {
+                TableRow<OwnedProductDto> row = new TableRow<>();
+                row.setOnMouseClicked(event -> {
+                    if (event.getButton() == MouseButton.SECONDARY && (!row.isEmpty())) {
+                        contextMenu.show(row, event.getScreenX(), event.getScreenY());
+                    }
+                });
+                return row;
             });
-            return row;
-        });
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        modelColumn.setCellValueFactory(new PropertyValueFactory<>("model"));
-        serialColumn.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
+            typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+            modelColumn.setCellValueFactory(new PropertyValueFactory<>("model"));
+            serialColumn.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
 
-        List<OwnedProductDto> loadedProducts = ClientServicesFactory.getFactory().getLoadUsersProductsService().load(email);
-        ObservableList<OwnedProductDto> productDtos = FXCollections.observableArrayList(loadedProducts);
-        productsTable.setItems(productDtos);
+            List<OwnedProductDto> loadedProducts = ClientServicesFactory.getFactory().getLoadUsersProductsService().load(email);
+            ObservableList<OwnedProductDto> productDtos = FXCollections.observableArrayList(loadedProducts);
+            productsTable.setItems(productDtos);
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 }
 

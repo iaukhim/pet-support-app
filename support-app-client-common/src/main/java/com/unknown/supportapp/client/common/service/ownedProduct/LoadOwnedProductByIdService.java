@@ -1,8 +1,9 @@
 package com.unknown.supportapp.client.common.service.ownedProduct;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.common.dto.ownedProduct.OwnedProductDto;
 
 public interface LoadOwnedProductByIdService {
 
-    OwnedProductDto load(int id);
+    OwnedProductDto load(int id) throws CustomServerError;
 }

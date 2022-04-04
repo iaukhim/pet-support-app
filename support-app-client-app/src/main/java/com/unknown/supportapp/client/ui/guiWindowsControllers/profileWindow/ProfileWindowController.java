@@ -1,5 +1,6 @@
 package com.unknown.supportapp.client.ui.guiWindowsControllers.profileWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.ui.factory.WindowConfig;
 import com.unknown.supportapp.client.ui.factory.WindowFactory;
 import com.unknown.supportapp.client.ui.guiWindowsControllers.productsWindow.ProductsWindowController;
@@ -9,10 +10,7 @@ import com.unknown.supportapp.client.common.service.factory.ClientServicesFactor
 import com.unknown.supportapp.utils.account.AccountUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.util.StringConverter;
 
@@ -80,59 +78,80 @@ public class ProfileWindowController {
 
     @FXML
     private void initialize() {
-        if (email == null) {
-            return;
+        try {
+            if (email == null) {
+                return;
+            }
+
+            accountDto = ClientServicesFactory.getFactory().getLoadAccountByEmail().load(email);
+
+            nameField.setText(accountDto.getName());
+            surnameField.setText(accountDto.getSurname());
+            emailField.setText(accountDto.getEmail());
+            passwordField.setText(accountDto.getPassword());
+            phoneNumberField.setText(accountDto.getPhoneNumber());
+            initBirthdayField();
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
         }
-
-        accountDto = ClientServicesFactory.getFactory().getLoadAccountByEmail().load(email);
-
-        nameField.setText(accountDto.getName());
-        surnameField.setText(accountDto.getSurname());
-        emailField.setText(accountDto.getEmail());
-        passwordField.setText(accountDto.getPassword());
-        phoneNumberField.setText(accountDto.getPhoneNumber());
-        initBirthdayField();
     }
 
     @FXML
     void saveButtonPressed(ActionEvent event) {
-        String email = emailField.getText();
-        String password = passwordField.getText();
+        try {
+            String email = emailField.getText();
+            String password = passwordField.getText();
 
-        if (!AccountUtils.checkPasswordFormat(password) || !AccountUtils.checkEmailFormat(email)) {
-            WindowFactory.getFactory().showStage(WindowConfig.WrongEmailOrPasswordWindow);
-            return;
+            if (!AccountUtils.checkPasswordFormat(password) || !AccountUtils.checkEmailFormat(email)) {
+                WindowFactory.getFactory().showStage(WindowConfig.WrongEmailOrPasswordWindow);
+                return;
+            }
+
+            if (!accountDto.getEmail().equals(email) & ClientServicesFactory.getFactory().getCheckAccountExistenceService().check(email)) {
+                WindowFactory.getFactory().showStage(WindowConfig.WrongEmailOrPasswordWindow);
+                return;
+            }
+
+            String text = birthdayField.getEditor().getText();
+            birthdayField.setValue(birthdayField.getConverter().fromString(text));
+            LocalDate birthdayLocalDate = birthdayField.getValue();
+            if (birthdayLocalDate == null) {
+                return;
+            }
+
+            accountDto.setEmail(email);
+            accountDto.setPassword(password);
+            accountDto.setName(nameField.getText());
+            accountDto.setSurname(surnameField.getText());
+            accountDto.setPhoneNumber(phoneNumberField.getText());
+            accountDto.setDateOfBirth(birthdayLocalDate);
+
+            ClientServicesFactory.getFactory().getUpdateAccountService().update(accountDto);
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
         }
-
-        if (!accountDto.getEmail().equals(email) & ClientServicesFactory.getFactory().getCheckAccountExistenceService().check(email)) {
-            WindowFactory.getFactory().showStage(WindowConfig.WrongEmailOrPasswordWindow);
-            return;
-        }
-
-        String text = birthdayField.getEditor().getText();
-        birthdayField.setValue(birthdayField.getConverter().fromString(text));
-        LocalDate birthdayLocalDate = birthdayField.getValue();
-        if (birthdayLocalDate == null) {
-            return;
-        }
-
-        accountDto.setEmail(email);
-        accountDto.setPassword(password);
-        accountDto.setName(nameField.getText());
-        accountDto.setSurname(surnameField.getText());
-        accountDto.setPhoneNumber(phoneNumberField.getText());
-        accountDto.setDateOfBirth(birthdayLocalDate);
-
-        ClientServicesFactory.getFactory().getUpdateAccountService().update(accountDto);
     }
 
     @FXML
     void deleteButtonPressed(ActionEvent event) {
-        int id = accountDto.getId();
-        ClientServicesFactory.getFactory().getDeleteAccountById().delete(id);
+        try {
+            int id = accountDto.getId();
+            ClientServicesFactory.getFactory().getDeleteAccountById().delete(id);
 
-        WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.LoginWindow);
-        clearFields();
+            WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.LoginWindow);
+            clearFields();
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
     @FXML

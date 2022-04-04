@@ -53,7 +53,7 @@ public class ServerConnection {
         return objectMapper;
     }
 
-    public String getResponse() {
+    public String getResponseAsString() {
         try {
             InputStream is = connection.getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(is);
@@ -67,9 +67,22 @@ public class ServerConnection {
         }
     }
 
+    public JsonNode getResponseAsNode(){
+        if (response == null) {
+            getResponseAsString();
+        }
+        JsonNode rootNode = null;
+        try {
+            rootNode = objectMapper.readTree(response);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return rootNode;
+    }
+
     public JsonNode getResponseHeader() {
         if (response == null) {
-            getResponse();
+            getResponseAsString();
         }
         JsonNode rootNode = null;
         try {
@@ -83,7 +96,7 @@ public class ServerConnection {
 
     public JsonNode getResponseBody() {
         if (response == null) {
-            getResponse();
+            getResponseAsString();
         }
         JsonNode rootNode = null;
         try {
@@ -104,6 +117,7 @@ public class ServerConnection {
     }
 
     public void close() {
+        if (connection.isClosed()) return;
         try {
             connection.close();
         } catch (IOException e) {

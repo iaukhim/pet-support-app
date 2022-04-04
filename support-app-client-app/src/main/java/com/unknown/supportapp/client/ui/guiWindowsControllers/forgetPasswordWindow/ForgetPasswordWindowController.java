@@ -1,5 +1,6 @@
 package com.unknown.supportapp.client.ui.guiWindowsControllers.forgetPasswordWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.ui.factory.WindowConfig;
 import com.unknown.supportapp.client.ui.factory.WindowFactory;
 import com.unknown.supportapp.client.ui.guiWindowsControllers.confirmationCodeWindow.ConfirmationCodeWindowController;
@@ -52,36 +53,43 @@ public class ForgetPasswordWindowController {
 
     @FXML
     void nextButtonPressed(ActionEvent event) {
-        String email = emailField.getText();
+        try {
+            String email = emailField.getText();
 
-        if(!AccountUtils.checkEmailFormat(email)){
-            Stage stage = WindowFactory.getFactory().getStage(WindowConfig.WrongEmailFormatWindow);
-            stage.setResizable(false);
-            stage.showAndWait();
-            return;
+            if(!AccountUtils.checkEmailFormat(email)){
+                Stage stage = WindowFactory.getFactory().getStage(WindowConfig.WrongEmailFormatWindow);
+                stage.setResizable(false);
+                stage.showAndWait();
+                return;
+            }
+            boolean check = ClientServicesFactory.getFactory().getCheckAccountExistenceService().check(email);
+
+            if (!check) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Fail");
+                alert.setContentText("There is no account with such email");
+                alert.showAndWait();
+                return;
+            }
+
+            String confirmationCode = ClientServicesFactory.getFactory().getConfirmationCodeService().send(email);
+            System.out.println(confirmationCode);
+
+            ConfirmationCodeWindowController controller = WindowFactory.getFactory().getController(WindowConfig.ConfirmationCodeWindow);
+
+            controller.setConfirmationCode(confirmationCode);
+            controller.setRegistration(false);
+            controller.setEmail(email);
+
+            emailField.clear();
+
+            WindowFactory.getFactory().getStage(WindowConfig.ConfirmationCodeWindow).show();
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
         }
-        boolean check = ClientServicesFactory.getFactory().getCheckAccountExistenceService().check(email);
-
-        if (!check) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Fail");
-            alert.setContentText("There is no account with such email");
-            alert.showAndWait();
-            return;
-        }
-
-        String confirmationCode = ClientServicesFactory.getFactory().getConfirmationCodeService().send(email);
-        System.out.println(confirmationCode);
-
-        ConfirmationCodeWindowController controller = WindowFactory.getFactory().getController(WindowConfig.ConfirmationCodeWindow);
-
-        controller.setConfirmationCode(confirmationCode);
-        controller.setRegistration(false);
-        controller.setEmail(email);
-
-        emailField.clear();
-
-        WindowFactory.getFactory().getStage(WindowConfig.ConfirmationCodeWindow).show();
 
     }
 

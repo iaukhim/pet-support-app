@@ -49,9 +49,10 @@ public class ServerApp {
                 OutputStreamWriter osw = new OutputStreamWriter(memoryOs);
                 BufferedWriter writer = new BufferedWriter(osw);
 
-                JsonNode response = ResponseFactory.getFactory().formResponse(Response.getInternalServerErrorResponse());
+                JsonNode response = ResponseFactory.getFactory().formResponse(Response.getInternalServerErrorResponse(), e);
                 try {
-                    writer.write(response.toString(), 0, response.toString().length());
+                    writer.write(response.toString());
+                    writer.flush();
                     clientConnection.setMemoryOs(memoryOs);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);

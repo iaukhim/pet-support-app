@@ -1,5 +1,6 @@
 package com.unknown.supportapp.client.ui.guiWindowsControllers.confirmationCodeWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.ui.factory.WindowConfig;
 import com.unknown.supportapp.client.ui.factory.WindowFactory;
 import com.unknown.supportapp.client.ui.guiWindowsControllers.newPasswordWindow.NewPasswordWindowController;
@@ -46,35 +47,42 @@ public class ConfirmationCodeWindowController {
     @FXML
     void okButtonPressed(ActionEvent event) {
 
-        if (registration) {
+        try {
+            if (registration) {
+                if (confirmationCode.equals(textField.getText())) {
+                    wrongCode.setVisible(false);
+                    ClientServicesFactory.getFactory().getConfirmationService().confirmation(email, password);
+                    textField.clear();
+                    WindowFactory.getFactory().hideStage(WindowConfig.ConfirmationCodeWindow);
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Success");
+                    alert.setContentText("Registration finished. Now you can log in system whit your account");
+                    alert.show();
+
+                    WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.LoginWindow);
+                    return;
+                }
+                wrongCode.setVisible(true);
+            }
             if (confirmationCode.equals(textField.getText())) {
                 wrongCode.setVisible(false);
-                ClientServicesFactory.getFactory().getConfirmationService().confirmation(email, password);
-                textField.clear();
+
+                WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.NewPasswordWindow);
+
+                NewPasswordWindowController controller = WindowFactory.getFactory().getController(WindowConfig.NewPasswordWindow);
+                controller.setEmail(email);
+
                 WindowFactory.getFactory().hideStage(WindowConfig.ConfirmationCodeWindow);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
-                alert.setContentText("Registration finished. Now you can log in system whit your account");
-                alert.show();
-
-                WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.LoginWindow);
+                textField.clear();
                 return;
             }
             wrongCode.setVisible(true);
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
         }
-        if (confirmationCode.equals(textField.getText())) {
-            wrongCode.setVisible(false);
-
-            WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.NewPasswordWindow);
-
-            NewPasswordWindowController controller = WindowFactory.getFactory().getController(WindowConfig.NewPasswordWindow);
-            controller.setEmail(email);
-
-            WindowFactory.getFactory().hideStage(WindowConfig.ConfirmationCodeWindow);
-            textField.clear();
-            return;
-        }
-        wrongCode.setVisible(true);
     }
 }

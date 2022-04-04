@@ -1,5 +1,6 @@
 package com.unknown.supportapp.client.ui.guiWindowsControllers.ticketsWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.ui.factory.WindowConfig;
 import com.unknown.supportapp.client.ui.factory.WindowFactory;
 import com.unknown.supportapp.client.ui.guiWindowsControllers.productsWindow.ProductsWindowController;
@@ -157,97 +158,111 @@ public class TicketsWindowController {
 
     @FXML
     void addInfoButtonPressed(ActionEvent event) {
-        if (addInfo) {
-            if (themeField.getText().trim().length() == 0 || textArea.getText().trim().length() == 0) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Please fill all fields");
-                alert.show();
-                return;
+        try {
+            if (addInfo) {
+                if (themeField.getText().trim().length() == 0 || textArea.getText().trim().length() == 0) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setContentText("Please fill all fields");
+                    alert.show();
+                    return;
+                }
+
+                TicketDto ticketDto = openedTicketsBox.getValue();
+                ticketDto.setText(ticketDto.getText() + "\n -------------- \n" + textArea.getText());
+                ClientServicesFactory.getFactory().getUpdateTicketService().update(ticketDto);
+
+                textArea.setEditable(false);
+                textArea.clear();
+                themeField.clear();
+                openedTicketsBox.getSelectionModel().clearSelection();
+                closedTicketsBox.getSelectionModel().clearSelection();
+                addInfo = false;
+                int userId = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
+                List<TicketDto> opened = ClientServicesFactory.getFactory().getLoadUserOpenedTicketsService().load(userId);
+                openedTickets.clear();
+                openedTickets.addAll(opened);
+                openedTicketsBox.setItems(FXCollections.observableArrayList(openedTickets));
+                openedTicketsBox.getSelectionModel().clearSelection();
+                themeField.clear();
+                textArea.clear();
             }
 
-            TicketDto ticketDto = openedTicketsBox.getValue();
-            ticketDto.setText(ticketDto.getText() + "\n -------------- \n" + textArea.getText());
-            ClientServicesFactory.getFactory().getUpdateTicketService().update(ticketDto);
+            textArea.clear();
 
-            textArea.setEditable(false);
-            textArea.clear();
-            themeField.clear();
-            openedTicketsBox.getSelectionModel().clearSelection();
-            closedTicketsBox.getSelectionModel().clearSelection();
-            addInfo = false;
-            int userId = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
-            List<TicketDto> opened = ClientServicesFactory.getFactory().getLoadUserOpenedTicketsService().load(userId);
-            openedTickets.clear();
-            openedTickets.addAll(opened);
-            openedTicketsBox.setItems(FXCollections.observableArrayList(openedTickets));
-            openedTicketsBox.getSelectionModel().clearSelection();
-            themeField.clear();
-            textArea.clear();
+            textArea.setVisible(true);
+            textArea.setEditable(true);
+            themeField.setVisible(true);
+            themeField.setEditable(false);
+            themeLabel.setVisible(true);
+            addInfoButton.setVisible(true);
+            addInfo = true;
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
         }
-
-        textArea.clear();
-
-        textArea.setVisible(true);
-        textArea.setEditable(true);
-        themeField.setVisible(true);
-        themeField.setEditable(false);
-        themeLabel.setVisible(true);
-        addInfoButton.setVisible(true);
-        addInfo = true;
     }
 
     @FXML
     void createNewTicket(ActionEvent event) {
-        if(ownedProducts.size() == 0){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("You don`t have any products yet");
-            alert.show();
-            return;
-        }
-        productBox.setDisable(false);
-        if (creation) {
-            if (themeField.getText().trim().length() == 0 || textArea.getText().trim().length() == 0 || productBox.getValue() == null) {
+        try {
+            if(ownedProducts.size() == 0){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Please fill all fields");
+                alert.setContentText("You don`t have any products yet");
                 alert.show();
                 return;
             }
+            productBox.setDisable(false);
+            if (creation) {
+                if (themeField.getText().trim().length() == 0 || textArea.getText().trim().length() == 0 || productBox.getValue() == null) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setContentText("Please fill all fields");
+                    alert.show();
+                    return;
+                }
 
-            TicketDto ticketDto = new TicketDto();
-            ticketDto.setTheme(themeField.getText());
-            ticketDto.setText(textArea.getText());
-            ticketDto.setStatus(true);
-            int id = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
-            ticketDto.setStarterId(id);
-            int productId = productBox.getValue().getId();
-            ticketDto.setProductId(productId);
-            ClientServicesFactory.getFactory().getSaveNewTicketService().save(ticketDto);
-            textArea.setEditable(false);
-            themeField.setEditable(false);
-            int userId = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
-            List<TicketDto> opened = ClientServicesFactory.getFactory().getLoadUserOpenedTicketsService().load(userId);
-            openedTickets.clear();
-            openedTickets.addAll(opened);
-            openedTicketsBox.setItems(FXCollections.observableArrayList(openedTickets));
-            openedTicketsBox.getSelectionModel().clearSelection();
-            themeField.clear();
+                TicketDto ticketDto = new TicketDto();
+                ticketDto.setTheme(themeField.getText());
+                ticketDto.setText(textArea.getText());
+                ticketDto.setStatus(true);
+                int id = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
+                ticketDto.setStarterId(id);
+                int productId = productBox.getValue().getId();
+                ticketDto.setProductId(productId);
+                ClientServicesFactory.getFactory().getSaveNewTicketService().save(ticketDto);
+                textArea.setEditable(false);
+                themeField.setEditable(false);
+                int userId = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
+                List<TicketDto> opened = ClientServicesFactory.getFactory().getLoadUserOpenedTicketsService().load(userId);
+                openedTickets.clear();
+                openedTickets.addAll(opened);
+                openedTicketsBox.setItems(FXCollections.observableArrayList(openedTickets));
+                openedTicketsBox.getSelectionModel().clearSelection();
+                themeField.clear();
+                textArea.clear();
+            }
+
             textArea.clear();
+            themeField.clear();
+
+            textArea.setVisible(true);
+            textArea.setEditable(true);
+            themeField.setVisible(true);
+            themeField.setEditable(true);
+            themeLabel.setVisible(true);
+            productBox.setVisible(true);
+            addInfoButton.setVisible(false);
+            closeTicketButton.setVisible(false);
+            creation = true;
+            openedTicketsBox.getSelectionModel().clearSelection();
+            closedTicketsBox.getSelectionModel().clearSelection();
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
         }
-
-        textArea.clear();
-        themeField.clear();
-
-        textArea.setVisible(true);
-        textArea.setEditable(true);
-        themeField.setVisible(true);
-        themeField.setEditable(true);
-        themeLabel.setVisible(true);
-        productBox.setVisible(true);
-        addInfoButton.setVisible(false);
-        closeTicketButton.setVisible(false);
-        creation = true;
-        openedTicketsBox.getSelectionModel().clearSelection();
-        closedTicketsBox.getSelectionModel().clearSelection();
     }
 
     @FXML
@@ -262,100 +277,121 @@ public class TicketsWindowController {
     }
 
     private void initTicketsBoxes() {
-        int userId = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
+        try {
+            int userId = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
 
-        List<TicketDto> opened = ClientServicesFactory.getFactory().getLoadUserOpenedTicketsService().load(userId);
-        List<TicketDto> closed = ClientServicesFactory.getFactory().getLoadUserClosedTicketsService().load(userId);
+            List<TicketDto> opened = ClientServicesFactory.getFactory().getLoadUserOpenedTicketsService().load(userId);
+            List<TicketDto> closed = ClientServicesFactory.getFactory().getLoadUserClosedTicketsService().load(userId);
 
 
-        openedTickets = FXCollections.observableArrayList(opened);
-        closedTickets = FXCollections.observableArrayList(closed);
+            openedTickets = FXCollections.observableArrayList(opened);
+            closedTickets = FXCollections.observableArrayList(closed);
 
-        openedTicketsBox.setItems(openedTickets);
-        closedTicketsBox.setItems(this.closedTickets);
+            openedTicketsBox.setItems(openedTickets);
+            closedTicketsBox.setItems(this.closedTickets);
 
-        openedTicketsBox.setConverter(new StringConverter<TicketDto>() {
-            @Override
-            public String toString(TicketDto object) {
-                if (object == null) {
-                    return "";
+            openedTicketsBox.setConverter(new StringConverter<TicketDto>() {
+                @Override
+                public String toString(TicketDto object) {
+                    if (object == null) {
+                        return "";
+                    }
+                    return object.getTheme();
                 }
-                return object.getTheme();
-            }
 
-            @Override
-            public TicketDto fromString(String string) {
-                return null;
-            }
-        });
-
-        closedTicketsBox.setConverter(new StringConverter<TicketDto>() {
-            @Override
-            public String toString(TicketDto object) {
-
-                if (object == null) {
-                    return "";
+                @Override
+                public TicketDto fromString(String string) {
+                    return null;
                 }
-                return object.getTheme();
-            }
+            });
 
-            @Override
-            public TicketDto fromString(String string) {
-                return null;
-            }
-        });
+            closedTicketsBox.setConverter(new StringConverter<TicketDto>() {
+                @Override
+                public String toString(TicketDto object) {
+
+                    if (object == null) {
+                        return "";
+                    }
+                    return object.getTheme();
+                }
+
+                @Override
+                public TicketDto fromString(String string) {
+                    return null;
+                }
+            });
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
     private void initProductsBox() {
-        List<OwnedProductDto> tmp = ClientServicesFactory.getFactory().getLoadUsersProductsService().load(email);
-        ArrayList<OwnedProductDto> ownedProductDtos = new ArrayList<>();
-        for (OwnedProductDto product : tmp) {
-            boolean passed = true;
-            for (OwnedProductDto dto : ownedProductDtos) {
-                if (product.getModel().equals(dto.getModel())) {
-                    passed = false;
+        try {
+            List<OwnedProductDto> tmp = ClientServicesFactory.getFactory().getLoadUsersProductsService().load(email);
+            ArrayList<OwnedProductDto> ownedProductDtos = new ArrayList<>();
+            for (OwnedProductDto product : tmp) {
+                boolean passed = true;
+                for (OwnedProductDto dto : ownedProductDtos) {
+                    if (product.getModel().equals(dto.getModel())) {
+                        passed = false;
+                    }
+                }
+                if (passed) {
+                    ownedProductDtos.add(product);
                 }
             }
-            if (passed) {
-                ownedProductDtos.add(product);
-            }
+
+            ownedProducts = FXCollections.observableArrayList(ownedProductDtos);
+            productBox.setItems(ownedProducts);
+            productBox.setConverter(new StringConverter<OwnedProductDto>() {
+                @Override
+                public String toString(OwnedProductDto object) {
+                    if (object == null) {
+                        return "";
+                    }
+                    return object.getModel();
+                }
+
+                @Override
+                public OwnedProductDto fromString(String string) {
+                    return null;
+                }
+            });
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
         }
-
-        ownedProducts = FXCollections.observableArrayList(ownedProductDtos);
-        productBox.setItems(ownedProducts);
-        productBox.setConverter(new StringConverter<OwnedProductDto>() {
-            @Override
-            public String toString(OwnedProductDto object) {
-                if (object == null) {
-                    return "";
-                }
-                return object.getModel();
-            }
-
-            @Override
-            public OwnedProductDto fromString(String string) {
-                return null;
-            }
-        });
     }
 
     @FXML
     void closeTicketButtonPressed(ActionEvent event) {
-        TicketDto ticket = openedTicketsBox.getValue();
-        ClientServicesFactory.getFactory().getCloseTicketService().close(ticket.getId());
-        int userId = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
-        List<TicketDto> opened = ClientServicesFactory.getFactory().getLoadUserOpenedTicketsService().load(userId);
-        openedTickets.clear();
-        openedTickets.addAll(opened);
-        openedTicketsBox.setItems(FXCollections.observableArrayList(openedTickets));
-        openedTicketsBox.getSelectionModel().clearSelection();
-        themeField.clear();
-        textArea.clear();
+        try {
+            TicketDto ticket = openedTicketsBox.getValue();
+            ClientServicesFactory.getFactory().getCloseTicketService().close(ticket.getId());
+            int userId = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
+            List<TicketDto> opened = ClientServicesFactory.getFactory().getLoadUserOpenedTicketsService().load(userId);
+            openedTickets.clear();
+            openedTickets.addAll(opened);
+            openedTicketsBox.setItems(FXCollections.observableArrayList(openedTickets));
+            openedTicketsBox.getSelectionModel().clearSelection();
+            themeField.clear();
+            textArea.clear();
 
-        List<TicketDto> closed = ClientServicesFactory.getFactory().getLoadUserClosedTicketsService().load(userId);
-        closedTickets.clear();
-        closedTickets.setAll(closed);
-        closedTicketsBox.setItems(closedTickets);
+            List<TicketDto> closed = ClientServicesFactory.getFactory().getLoadUserClosedTicketsService().load(userId);
+            closedTickets.clear();
+            closedTickets.setAll(closed);
+            closedTicketsBox.setItems(closedTickets);
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
     private void clearFields(){

@@ -6,7 +6,6 @@ import com.unknown.supportapp.server.common.Response;
 import com.unknown.supportapp.server.common.ResponseFactory;
 import com.unknown.supportapp.server.controllers.Controller;
 import com.unknown.supportapp.server.services.AccountService;
-import com.unknown.supportapp.server.services.factory.ServiceFactory;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

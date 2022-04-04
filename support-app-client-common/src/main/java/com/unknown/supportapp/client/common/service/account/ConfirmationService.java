@@ -1,6 +1,8 @@
 package com.unknown.supportapp.client.common.service.account;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
+
 public interface ConfirmationService {
 
-    public void confirmation (String email, String password);
+    void confirmation (String email, String password) throws CustomServerError;
 }

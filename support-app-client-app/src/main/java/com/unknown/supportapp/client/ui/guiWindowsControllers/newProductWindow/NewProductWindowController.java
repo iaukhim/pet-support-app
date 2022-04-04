@@ -1,5 +1,6 @@
 package com.unknown.supportapp.client.ui.guiWindowsControllers.newProductWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.ui.factory.WindowConfig;
 import com.unknown.supportapp.client.ui.factory.WindowFactory;
 import com.unknown.supportapp.common.dto.ownedProduct.OwnedProductDto;
@@ -42,68 +43,89 @@ public class NewProductWindowController {
 
     @FXML
     void addButtonPressed(ActionEvent event) {
-        boolean check = ClientServicesFactory.getFactory().getCheckSerialService().check(serialField.getText());
+        try {
+            boolean check = ClientServicesFactory.getFactory().getCheckSerialService().check(serialField.getText());
 
-        if (!check){
+            if (!check){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Check serial number format");
+                alert.showAndWait();
+                return;
+            }
+
+            OwnedProductDto productDto = new OwnedProductDto();
+
+            int id = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
+
+            productDto.setType(typeBox.getValue());
+            productDto.setModel(modelBox.getConverter().toString(modelBox.getValue()));
+            productDto.setSerialNumber(serialField.getText());
+            productDto.setOwnerId(id);
+
+            ClientServicesFactory.getFactory().getSaveProductService().save(productDto);
+
+            serialField.clear();
+            modelBox.getSelectionModel().clearSelection();
+            typeBox.getSelectionModel().clearSelection();
+            WindowFactory.getFactory().hideStage(WindowConfig.NewProductWindow);
+        } catch (CustomServerError e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Check serial number format");
-            alert.showAndWait();
-            return;
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
         }
-
-        OwnedProductDto productDto = new OwnedProductDto();
-
-        int id = ClientServicesFactory.getFactory().getLoadIdByEmailService().load(email);
-
-        productDto.setType(typeBox.getValue());
-        productDto.setModel(modelBox.getConverter().toString(modelBox.getValue()));
-        productDto.setSerialNumber(serialField.getText());
-        productDto.setOwnerId(id);
-
-        ClientServicesFactory.getFactory().getSaveProductService().save(productDto);
-
-        serialField.clear();
-        modelBox.getSelectionModel().clearSelection();
-        typeBox.getSelectionModel().clearSelection();
-        WindowFactory.getFactory().hideStage(WindowConfig.NewProductWindow);
 
     }
 
     @FXML
     private void initialize() {
 
-        List<String> productTypes = ClientServicesFactory.getFactory().getLoadAllProductsTypesService().load();
-        ObservableList<String> productsTypesList = FXCollections.observableArrayList(productTypes);
-        typeBox.setItems(productsTypesList);
-        typeBox.setOnAction(this::typeSelected);
+        try {
+            List<String> productTypes = ClientServicesFactory.getFactory().getLoadAllProductsTypesService().load();
+            ObservableList<String> productsTypesList = FXCollections.observableArrayList(productTypes);
+            typeBox.setItems(productsTypesList);
+            typeBox.setOnAction(this::typeSelected);
 
-        modelBox.setConverter(new StringConverter<ProductDto>() {
-            @Override
-            public String toString(ProductDto object) {
-                if (object == null) {
-                    return "";
+            modelBox.setConverter(new StringConverter<ProductDto>() {
+                @Override
+                public String toString(ProductDto object) {
+                    if (object == null) {
+                        return "";
+                    }
+                    return object.getModel();
                 }
-                return object.getModel();
-            }
 
-            @Override
-            public ProductDto fromString(String string) {
-                return new ProductDto();
-            }
-        });
+                @Override
+                public ProductDto fromString(String string) {
+                    return new ProductDto();
+                }
+            });
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
     private void typeSelected(ActionEvent event) {
-        if(currentType == null){
-            currentType = "";
+        try {
+            if(currentType == null){
+                currentType = "";
+            }
+            if (currentType.equals(typeBox.getValue())) {
+                return;
+            }
+            currentType = typeBox.getValue();
+            List<ProductDto> products = ClientServicesFactory.getFactory().getLoadProductsByTypeService().load(currentType);
+            ObservableList<ProductDto> productsList = FXCollections.observableArrayList(products);
+            modelBox.setItems(productsList);
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
         }
-        if (currentType.equals(typeBox.getValue())) {
-            return;
-        }
-        currentType = typeBox.getValue();
-        List<ProductDto> products = ClientServicesFactory.getFactory().getLoadProductsByTypeService().load(currentType);
-        ObservableList<ProductDto> productsList = FXCollections.observableArrayList(products);
-        modelBox.setItems(productsList);
     }
 
     public void setEmail(String email) {

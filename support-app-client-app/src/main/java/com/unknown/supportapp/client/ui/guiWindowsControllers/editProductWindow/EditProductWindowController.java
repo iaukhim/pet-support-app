@@ -1,5 +1,6 @@
 package com.unknown.supportapp.client.ui.guiWindowsControllers.editProductWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.ui.factory.WindowConfig;
 import com.unknown.supportapp.client.ui.factory.WindowFactory;
 import com.unknown.supportapp.common.dto.ownedProduct.OwnedProductDto;
@@ -32,25 +33,32 @@ public class EditProductWindowController {
 
     @FXML
     public void editButtonPressed(){
-        if(serialField.getText().length() == 0){
-            errorLabel.setVisible(true);
-            return;
-        }
-        errorLabel.setVisible(false);
+        try {
+            if(serialField.getText().length() == 0){
+                errorLabel.setVisible(true);
+                return;
+            }
+            errorLabel.setVisible(false);
 
-        boolean result = ClientServicesFactory.getFactory().getChangeSerialService().change(productDto.getSerialNumber(), serialField.getText());
+            boolean result = ClientServicesFactory.getFactory().getChangeSerialService().change(productDto.getSerialNumber(), serialField.getText());
 
-        if (!result){
+            if (!result){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Check serial number format");
+                alert.showAndWait();
+                return;
+            }
+
+            serialField.clear();
+            modelField.clear();
+            typeField.clear();
+            WindowFactory.getFactory().hideStage(WindowConfig.EditProductWindow);
+        } catch (CustomServerError e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Check serial number format");
-            alert.showAndWait();
-            return;
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
         }
-
-        serialField.clear();
-        modelField.clear();
-        typeField.clear();
-        WindowFactory.getFactory().hideStage(WindowConfig.EditProductWindow);
     }
 
     private void init(){

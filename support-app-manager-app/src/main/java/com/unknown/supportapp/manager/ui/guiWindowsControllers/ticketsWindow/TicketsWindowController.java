@@ -1,5 +1,6 @@
 package com.unknown.supportapp.manager.ui.guiWindowsControllers.ticketsWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.common.service.factory.ClientServicesFactory;
 import com.unknown.supportapp.common.dto.ticket.TicketDto;
 import com.unknown.supportapp.manager.ui.factory.WindowFactory;
@@ -34,32 +35,47 @@ public class TicketsWindowController {
     private TableColumn<TicketDto, String> themeColumn;
 
     private void init() {
-        ticketsTable.setRowFactory(tv -> {
-            TableRow<TicketDto> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2 && (!row.isEmpty())) {
-                    TicketDto item = row.getItem();
+        try {
+            ticketsTable.setRowFactory(tv -> {
+                TableRow<TicketDto> row = new TableRow<>();
+                row.setOnMouseClicked(event -> {
+                    if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2 && (!row.isEmpty())) {
+                        TicketDto item = row.getItem();
 
-                    UnassignedTicketWindowController controller = WindowFactory.getFactory().getController(WindowConfig.UnassignedTicketWindow);
-                    controller.setTicket(item);
-                    controller.setEmail(email);
-                    WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.UnassignedTicketWindow);
+                        UnassignedTicketWindowController controller = WindowFactory.getFactory().getController(WindowConfig.UnassignedTicketWindow);
+                        controller.setTicket(item);
+                        controller.setEmail(email);
+                        WindowFactory.getFactory().setScene(WindowConfig.PrimaryWindow, WindowConfig.UnassignedTicketWindow);
+                    }
+                });
+                return row;
+            });
+            themeColumn.setCellValueFactory(new PropertyValueFactory<>("theme"));
+            modelColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<TicketDto, String>, ObservableValue<String>>() {
+                @Override
+                public ObservableValue<String> call(TableColumn.CellDataFeatures<TicketDto, String> param) {
+                    String model = null;
+                    try {
+                        model = ClientServicesFactory.getFactory().getOwnedProductLoadModelByIdService().load(param.getValue().getProductId());
+                    } catch (CustomServerError e) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText(e.getErrorTitle());
+                        alert.setContentText(e.getErrorDescription());
+                        alert.show();
+                    }
+                    return new SimpleStringProperty(model);
                 }
             });
-            return row;
-        });
-        themeColumn.setCellValueFactory(new PropertyValueFactory<>("theme"));
-        modelColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<TicketDto, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<TicketDto, String> param) {
-                String model = ClientServicesFactory.getFactory().getOwnedProductLoadModelByIdService().load(param.getValue().getProductId());
-                return new SimpleStringProperty(model);
-            }
-        });
 
-        List<TicketDto> load = ClientServicesFactory.getFactory().getLoadUnAssignedTicketsService().load();
-        ObservableList<TicketDto> ticketDtos = FXCollections.observableArrayList(load);
-        ticketsTable.setItems(ticketDtos);
+            List<TicketDto> load = ClientServicesFactory.getFactory().getLoadUnAssignedTicketsService().load();
+            ObservableList<TicketDto> ticketDtos = FXCollections.observableArrayList(load);
+            ticketsTable.setItems(ticketDtos);
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
     @FXML
@@ -88,9 +104,16 @@ public class TicketsWindowController {
     }
 
     public void refresh(){
-        List<TicketDto> load = ClientServicesFactory.getFactory().getLoadUnAssignedTicketsService().load();
-        ObservableList<TicketDto> ticketDtos = FXCollections.observableArrayList(load);
-        ticketsTable.setItems(ticketDtos);
+        try {
+            List<TicketDto> load = ClientServicesFactory.getFactory().getLoadUnAssignedTicketsService().load();
+            ObservableList<TicketDto> ticketDtos = FXCollections.observableArrayList(load);
+            ticketsTable.setItems(ticketDtos);
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
     @FXML

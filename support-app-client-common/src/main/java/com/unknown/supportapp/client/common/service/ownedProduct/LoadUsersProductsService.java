@@ -1,10 +1,11 @@
 package com.unknown.supportapp.client.common.service.ownedProduct;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.common.dto.ownedProduct.OwnedProductDto;
 
 import java.util.List;
 
 public interface LoadUsersProductsService {
 
-    List<OwnedProductDto> load (String email);
+    List<OwnedProductDto> load (String email) throws CustomServerError;
 }

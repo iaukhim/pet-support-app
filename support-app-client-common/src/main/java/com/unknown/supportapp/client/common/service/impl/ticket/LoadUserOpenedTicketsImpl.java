@@ -2,6 +2,8 @@ package com.unknown.supportapp.client.common.service.impl.ticket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.unknown.supportapp.client.common.exception.CustomServerError;
+import com.unknown.supportapp.client.common.exception.ExceptionHandler;
 import com.unknown.supportapp.client.common.net.RequestFactory;
 import com.unknown.supportapp.client.common.net.ServerConnection;
 import com.unknown.supportapp.client.common.service.ticket.LoadUserOpenedTicketsService;
@@ -11,8 +13,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class LoadUserOpenedTicketsImpl implements LoadUserOpenedTicketsService {
+
+    private ExceptionHandler exceptionHandler;
+
     @Override
-    public List<TicketDto> load(int userId) {
+    public List<TicketDto> load(int userId) throws CustomServerError {
         List<TicketDto> ticketsList;
 
         ServerConnection connection = new ServerConnection();
@@ -22,9 +27,11 @@ public class LoadUserOpenedTicketsImpl implements LoadUserOpenedTicketsService {
 
         JsonNode responseHeader = connection.getResponseHeader();
         int responseCode = responseHeader.get("response-code").asInt();
-        if (responseCode != 200){
-            connection.close();
-            throw new RuntimeException("Server-error");
+        connection.close();
+
+        if (responseCode >= 500){
+            exceptionHandler = new ExceptionHandler();
+            exceptionHandler.handleResponse(connection.getResponseBody());
         }
 
         JsonNode responseBody = connection.getResponseBody();
@@ -36,7 +43,6 @@ public class LoadUserOpenedTicketsImpl implements LoadUserOpenedTicketsService {
         }
         ticketsList = Arrays.asList(tickets);
 
-        connection.close();
         return ticketsList;
     }
 }

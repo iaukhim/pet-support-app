@@ -1,5 +1,6 @@
 package com.unknown.supportapp.manager.ui.guiWindowsControllers.unassignedTicketWindow;
 
+import com.unknown.supportapp.client.common.exception.CustomServerError;
 import com.unknown.supportapp.client.common.service.factory.ClientServicesFactory;
 import com.unknown.supportapp.common.dto.ownedProduct.OwnedProductDto;
 import com.unknown.supportapp.common.dto.ticket.TicketDto;
@@ -62,31 +63,45 @@ public class UnassignedTicketWindowController {
     }
 
     private void initProductsBox() {
-        productBox.setConverter(new StringConverter<OwnedProductDto>() {
-            @Override
-            public String toString(OwnedProductDto object) {
-                if (object == null) {
-                    return "";
+        try {
+            productBox.setConverter(new StringConverter<OwnedProductDto>() {
+                @Override
+                public String toString(OwnedProductDto object) {
+                    if (object == null) {
+                        return "";
+                    }
+                    return object.getModel();
                 }
-                return object.getModel();
-            }
 
-            @Override
-            public OwnedProductDto fromString(String string) {
-                return null;
-            }
-        });
-        OwnedProductDto product = ClientServicesFactory.getFactory().getLoadOwnedProductByIdService().load(ticket.getProductId());
-        productBox.setItems(FXCollections.observableArrayList(product));
-        productBox.getSelectionModel().selectFirst();
+                @Override
+                public OwnedProductDto fromString(String string) {
+                    return null;
+                }
+            });
+            OwnedProductDto product = ClientServicesFactory.getFactory().getLoadOwnedProductByIdService().load(ticket.getProductId());
+            productBox.setItems(FXCollections.observableArrayList(product));
+            productBox.getSelectionModel().selectFirst();
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
     @FXML
     void manageTicketButtonPressed(ActionEvent event) {
-        int id = ClientServicesFactory.getFactory().getManagerLoadIdByEmailService().load(email);
-        ticket.setManagerId(id);
-        ClientServicesFactory.getFactory().getTicketSetManagerIdService().set(ticket);
-        ticketsButtonPressed(new ActionEvent());
+        try {
+            int id = ClientServicesFactory.getFactory().getManagerLoadIdByEmailService().load(email);
+            ticket.setManagerId(id);
+            ClientServicesFactory.getFactory().getTicketSetManagerIdService().set(ticket);
+            ticketsButtonPressed(new ActionEvent());
+        } catch (CustomServerError e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(e.getErrorTitle());
+            alert.setContentText(e.getErrorDescription());
+            alert.show();
+        }
     }
 
 
