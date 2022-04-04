@@ -6,8 +6,8 @@ import com.unknown.supportapp.common.dto.acccount.AccountDto;
 import com.unknown.supportapp.server.dao.AccountDao;
 import com.unknown.supportapp.server.entities.Account;
 import com.unknown.supportapp.server.mail.MailService;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Transactional

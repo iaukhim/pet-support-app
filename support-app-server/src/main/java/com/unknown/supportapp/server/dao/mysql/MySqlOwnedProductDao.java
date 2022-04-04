@@ -1,14 +1,10 @@
 package com.unknown.supportapp.server.dao.mysql;
 
 import com.unknown.supportapp.server.dao.OwnedProductDao;
-import com.unknown.supportapp.server.db.mysql.DbConnectionManager;
 import com.unknown.supportapp.server.entities.OwnedProduct;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class MySqlOwnedProductDao implements OwnedProductDao {
@@ -16,204 +12,90 @@ public class MySqlOwnedProductDao implements OwnedProductDao {
     public MySqlOwnedProductDao() {
     }
 
-    private final String LOAD_USERS_PRODUCTS = "SELECT * from pet_db.owned_products WHERE owner_id IN ( SELECT id FROM pet_db.accounts WHERE `email` = ?)";
-    private final String SAVE_PRODUCT = "INSERT INTO pet_db.owned_products (owner_id, `type`, model,  serial_number) values (?, ?, ?, ?)";
-    private final String CHECK_SERIAL = "SELECT serial_number FROM pet_db.owned_products WHERE serial_number = ?";
-    private final String CHANGE_SERIAL = "UPDATE pet_db.owned_products SET serial_number = ? WHERE serial_number = ?";
-    private final String DELETE_USER_PRODUCT = "DELETE FROM pet_db.owned_products WHERE owner_id = ? AND serial_number = ?";
-    private final String LOAD_PRODUCT_BY_ID = "SELECT * from pet_db.owned_products WHERE id = ?";
-    private final String LOAD_MODEL_BY_ID = "SELECT `model` from pet_db.owned_products WHERE id = ?";
+    public MySqlOwnedProductDao(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    private EntityManager entityManager;
 
     @Override
     public List<OwnedProduct> loadUsersProducts(String email) {
-        List<OwnedProduct> products = new ArrayList<>();
-
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-
+        TypedQuery<OwnedProduct> query = entityManager.createQuery("SELECT o FROM OwnedProduct as o WHERE o.ownerId IN (SELECT a.id FROM Account as a WHERE a.email = :email)", OwnedProduct.class);
+        query.setParameter("email", email);
         try {
-            preparedStatement = connection.prepareStatement(LOAD_USERS_PRODUCTS);
-            preparedStatement.setString(1, email);
-            resultSet = preparedStatement.executeQuery();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in ProductDao", e);
+            List<OwnedProduct> resultList = query.getResultList();
+            return resultList;
+        } catch (Exception e) {
+            throw new RuntimeException("Dao exception", e);
         }
-        try {
-            while (resultSet.next()){
-                String type = resultSet.getString("type");
-                String model = resultSet.getString("model");
-                String serialNumber = resultSet.getString("serial_number");
-                int ownerId = resultSet.getInt("owner_id");
-                int id = resultSet.getInt("id");
-
-                OwnedProduct product = new OwnedProduct(id, ownerId, type, model, serialNumber);
-
-                products.add(product);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL Exception in ProductDao", e);
-        }
-
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
-        return products;
     }
 
     @Override
     public void saveProduct(OwnedProduct product) {
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        PreparedStatement preparedStatement = null;
-
+        entityManager.joinTransaction();
         try {
-            preparedStatement = connection.prepareStatement(SAVE_PRODUCT);
-            preparedStatement.setInt(1, product.getOwnerId());
-            preparedStatement.setString(2, product.getType());
-            preparedStatement.setString(3, product.getModel());
-            preparedStatement.setString(4, product.getSerialNumber());
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in ProductDao", e);
+            entityManager.merge(product);
+        } catch (Exception e) {
+            throw new RuntimeException("Dao exception", e);
         }
-
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement);
     }
     @Override
     public boolean changeSerial(String oldValue, String newValue) {
-        boolean result = false;
+        entityManager.joinTransaction();
+        TypedQuery<OwnedProduct> loadProductQuery = entityManager.createQuery("SELECT o FROM OwnedProduct as o WHERE o.serialNumber = :serialNumber", OwnedProduct.class);
+        loadProductQuery.setParameter("serialNumber", oldValue);
+        OwnedProduct product = loadProductQuery.getSingleResult();
 
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        PreparedStatement preparedStatement;
-
-
-        try {
-            preparedStatement = connection.prepareStatement(CHECK_SERIAL);
-            preparedStatement.setString(1, newValue);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()){
-                String serialNumber = resultSet.getString("serial_number");
-                if(!serialNumber.equals(oldValue)){
-                    return false;
-                }
-            }
-            preparedStatement = connection.prepareStatement(CHANGE_SERIAL);
-            preparedStatement.setString(1, newValue);
-            preparedStatement.setString(2, oldValue);
-            preparedStatement.execute();
-
-            result = true;
-        }
-        catch (SQLException e) {
-            throw new RuntimeException("SQL exception in ProductDao", e);
+        if(checkSerial(newValue)){
+            product.setSerialNumber(newValue);
+            entityManager.merge(product);
+            return true;
         }
 
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement);
-        return result;
+        return false;
     }
 
     @Override
     public void deleteUserProduct(OwnedProduct product) {
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        PreparedStatement preparedStatement = null;
-
+        entityManager.joinTransaction();
         try {
-            preparedStatement = connection.prepareStatement(DELETE_USER_PRODUCT);
-            preparedStatement.setInt(1, product.getOwnerId());
-            preparedStatement.setString(2, product.getSerialNumber());
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in ProductDao", e);
+            OwnedProduct entityForDelete = entityManager.find(OwnedProduct.class, product.getId());
+            entityManager.remove(entityForDelete);
+        } catch (Exception e) {
+            throw new RuntimeException("Dao exception", e);
         }
-
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement);
     }
 
     @Override
     public boolean checkSerial(String serialNumber) {
-        boolean result = true;
-
-        Connection connection = DbConnectionManager.getManager().getConnection();
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-
+        entityManager.joinTransaction();
+        TypedQuery<OwnedProduct> query = entityManager.createQuery("SELECT o FROM OwnedProduct as o WHERE o.serialNumber = :serialNumber", OwnedProduct.class);
+        query.setParameter("serialNumber", serialNumber);
         try {
-            preparedStatement = connection.prepareStatement(CHECK_SERIAL);
-            preparedStatement.setString(1, serialNumber);
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                result = false;
+            if(query.getResultList().isEmpty()){
+                return true;
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in ProductDao", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Dao exception", e);
         }
 
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
-
-        return result;
+        return false;
     }
 
     @Override
     public OwnedProduct loadById(int id) {
-        OwnedProduct product = null;
-
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-
+        entityManager.joinTransaction();
         try {
-            preparedStatement = connection.prepareStatement(LOAD_PRODUCT_BY_ID);
-            preparedStatement.setInt(1, id);
-            resultSet = preparedStatement.executeQuery();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in ProductDao", e);
+            return entityManager.find(OwnedProduct.class, id);
+        } catch (Exception e) {
+            throw new RuntimeException("Dao exception", e);
         }
-        try {
-            while (resultSet.next()){
-                String type = resultSet.getString("type");
-                String model = resultSet.getString("model");
-                String serialNumber = resultSet.getString("serial_number");
-                int ownerId = resultSet.getInt("owner_id");
-
-                product = new OwnedProduct(id, ownerId, type, model, serialNumber);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL Exception in ProductDao", e);
-        }
-
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
-        return product;
     }
 
     @Override
     public String loadModelById(int id) {
-        String model = null;
-
-        Connection connection = DbConnectionManager.getManager().getConnection();
-
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-
-        try {
-            preparedStatement = connection.prepareStatement(LOAD_MODEL_BY_ID);
-            preparedStatement.setInt(1, id);
-            resultSet = preparedStatement.executeQuery();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in ProductDao", e);
-        }
-        try {
-            while (resultSet.next()){
-                model = resultSet.getString("model");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL Exception in ProductDao", e);
-        }
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
-        return model;
+        entityManager.joinTransaction();
+        OwnedProduct product = entityManager.find(OwnedProduct.class, id);
+        return product.getModel();
     }
 }

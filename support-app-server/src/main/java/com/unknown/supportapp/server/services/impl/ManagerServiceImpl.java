@@ -6,6 +6,9 @@ import com.unknown.supportapp.server.entities.converters.ManagerConverter;
 import com.unknown.supportapp.server.services.ManagerService;
 import com.unknown.supportapp.common.dto.manager.ManagerDto;
 
+import javax.transaction.Transactional;
+
+@Transactional
 public class ManagerServiceImpl implements ManagerService {
 
     private ManagerDao managerDao;

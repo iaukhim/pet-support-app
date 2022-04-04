@@ -1,72 +1,54 @@
 package com.unknown.supportapp.server.dao.mysql;
 
 import com.unknown.supportapp.server.dao.ManagerDao;
-import com.unknown.supportapp.server.db.mysql.DbConnectionManager;
 import com.unknown.supportapp.server.entities.Manager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
 
 public class MySqlManagerDao implements ManagerDao {
+
+    private EntityManager entityManager;
 
     public MySqlManagerDao() {
     }
 
-    private final  String LOG_IN = "SELECT `email`, `password` FROM pet_db.managers_accounts WHERE `email` = ? AND `password` = ?";
-    private final String LOAD_ID_BY_EMAIL = "SELECT `id` FROM pet_db.managers_accounts WHERE `email` = ?";
+    public MySqlManagerDao(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public boolean login(Manager manager) {
-        boolean result = false;
-        Connection connection = DbConnectionManager.getManager().getConnection();
+        boolean result = true;
 
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-
+        entityManager.joinTransaction();
+        Query query = entityManager.createQuery("select m  from Manager as m WHERE m.email = :email and m.password = :password", Manager.class);
+        query.setParameter("email", manager.getEmail());
+        query.setParameter("password", manager.getPassword());
         try {
-            preparedStatement = connection.prepareStatement(LOG_IN);
-            preparedStatement.setString(1, manager.getEmail());
-            preparedStatement.setString(2, manager.getPassword());
-            resultSet = preparedStatement.executeQuery();
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL exception in AccountDao", e);
-        }
-        try {
-            if (resultSet.next()) {
-                result = true;
+            if(query.getResultList().isEmpty()){
+                result = false;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exception", e);
         }
-
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
         return result;
     }
 
     @Override
     public int loadIdByEmail(String email) {
         int id = -1;
-        Connection connection = DbConnectionManager.getManager().getConnection();
 
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
-
+        entityManager.joinTransaction();
+        TypedQuery<Manager> query = entityManager.createQuery("select m from Manager as m WHERE m.email = :email", Manager.class);
+        query.setParameter("email", email);
         try {
-            preparedStatement = connection.prepareStatement(LOAD_ID_BY_EMAIL);
-            preparedStatement.setString(1, email);
-            resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                id = resultSet.getInt("id");
-
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("SQL Exception in AccountDao", e);
+            id = query.getSingleResult().getId();
+        } catch (Exception e) {
+            throw new RuntimeException("Dao Exception", e);
         }
-
-        DbConnectionManager.getManager().closeDbResources(connection, preparedStatement, resultSet);
         return id;
     }
 }

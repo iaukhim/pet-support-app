@@ -1,15 +1,23 @@
 package com.unknown.supportapp.server.entities;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(schema = "pet_db", name = "tickets")
 public class Ticket {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "starter_id")
     private int starterId;
 
+    @Column(name = "manager_id")
     private int managerId;
 
+    @Column(name = "product_id")
     private int productId;
 
     private String theme;

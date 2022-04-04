@@ -30,6 +30,9 @@
         <javafx.controls.version>17.0.1</javafx.controls.version>
         <javafx.fxml.version>17.0.1</javafx.fxml.version>
         <spring-context.version>5.3.16</spring-context.version>
+        <spring-boot-starter-data-jpa.version>2.6.5</spring-boot-starter-data-jpa.version>
+        <jakarta.xml.bind-api.version>2.3.2</jakarta.xml.bind-api.version>
+        <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
 
     </properties>
     <packaging>pom</packaging>

@@ -1,17 +1,24 @@
 package com.unknown.supportapp.server.entities;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(name = "owned_products", schema = "pet_db")
 public class OwnedProduct {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "owner_id")
     private int ownerId;
 
     private String type;
 
     private String model;
 
+    @Column(name = "serial_number")
     private String serialNumber;
 
 

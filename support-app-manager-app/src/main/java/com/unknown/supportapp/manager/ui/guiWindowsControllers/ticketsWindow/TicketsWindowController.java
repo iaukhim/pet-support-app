@@ -33,8 +33,7 @@ public class TicketsWindowController {
     @FXML
     private TableColumn<TicketDto, String> themeColumn;
 
-    @FXML
-    private void initialize() {
+    private void init() {
         ticketsTable.setRowFactory(tv -> {
             TableRow<TicketDto> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -85,7 +84,7 @@ public class TicketsWindowController {
 
     public void setEmail(String email) {
         this.email = email;
-        initialize();
+        init();
     }
 
     public void refresh(){

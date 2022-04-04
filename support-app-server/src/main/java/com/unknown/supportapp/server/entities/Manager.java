@@ -1,9 +1,14 @@
 package com.unknown.supportapp.server.entities;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(name = "managers_accounts", schema = "pet_db")
 public class Manager {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String email;

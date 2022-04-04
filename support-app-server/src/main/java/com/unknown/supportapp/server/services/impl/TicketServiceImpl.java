@@ -7,8 +7,10 @@ import com.unknown.supportapp.common.dto.ticket.TicketDto;
 import com.unknown.supportapp.server.entities.converters.TicketConverter;
 import com.unknown.supportapp.server.services.TicketService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Transactional
 public class TicketServiceImpl implements TicketService {
 
     private TicketDao ticketDao;

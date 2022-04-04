@@ -18,26 +18,26 @@ public class DaoConfig {
 
     @Bean
     public AccountDao accountDao(){
-        return new MySqlAccountDao(emf);
+        return new MySqlAccountDao(emf.createEntityManager());
     }
 
     @Bean
     public ManagerDao managerDao(){
-        return new MySqlManagerDao();
+        return new MySqlManagerDao(emf.createEntityManager());
     }
 
     @Bean
     public OwnedProductDao ownedProductDao(){
-        return new MySqlOwnedProductDao();
+        return new MySqlOwnedProductDao(emf.createEntityManager());
     }
 
     @Bean
     public ProductDao productDao(){
-        return new MySqlProductDao();
+        return new MySqlProductDao(emf.createEntityManager());
     }
 
     @Bean
     public TicketDao ticketDao(){
-        return new MySqlTicketDao();
+        return new MySqlTicketDao(emf.createEntityManager());
     }
 }

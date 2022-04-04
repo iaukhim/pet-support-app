@@ -1,14 +1,15 @@
 package com.unknown.supportapp.server.services.impl;
 
 import com.unknown.supportapp.server.dao.OwnedProductDao;
-import com.unknown.supportapp.server.dao.factory.DaoFactory;
 import com.unknown.supportapp.server.entities.OwnedProduct;
 import com.unknown.supportapp.server.entities.converters.OwnedProductConverter;
 import com.unknown.supportapp.common.dto.ownedProduct.OwnedProductDto;
 import com.unknown.supportapp.server.services.OwnedProductService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Transactional
 public class OwnedProductServiceImpl implements OwnedProductService {
 
     private OwnedProductDao ownedProductDao;

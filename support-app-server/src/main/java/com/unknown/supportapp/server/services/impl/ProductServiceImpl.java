@@ -3,12 +3,13 @@ package com.unknown.supportapp.server.services.impl;
 import com.unknown.supportapp.server.dao.ProductDao;
 import com.unknown.supportapp.server.services.ProductService;
 import com.unknown.supportapp.common.dto.product.ProductDto;
-import com.unknown.supportapp.server.dao.factory.DaoFactory;
 import com.unknown.supportapp.server.entities.Product;
 import com.unknown.supportapp.server.entities.converters.ProductConverter;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Transactional
 public class ProductServiceImpl implements ProductService {
 
     private ProductDao productDao;

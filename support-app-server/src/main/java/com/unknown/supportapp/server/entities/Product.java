@@ -1,9 +1,14 @@
 package com.unknown.supportapp.server.entities;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(schema = "pet_db", name = "products")
 public class Product {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String type;
