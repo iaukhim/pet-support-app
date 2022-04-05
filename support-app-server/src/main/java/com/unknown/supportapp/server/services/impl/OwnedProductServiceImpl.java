@@ -14,22 +14,25 @@ public class OwnedProductServiceImpl implements OwnedProductService {
 
     private OwnedProductDao ownedProductDao;
 
+    private OwnedProductConverter ownedProductConverter;
+
     public OwnedProductServiceImpl() {
     }
 
-    public OwnedProductServiceImpl(OwnedProductDao ownedProductDao) {
+    public OwnedProductServiceImpl(OwnedProductDao ownedProductDao, OwnedProductConverter ownedProductConverter) {
         this.ownedProductDao = ownedProductDao;
+        this.ownedProductConverter = ownedProductConverter;
     }
 
     @Override
     public List<OwnedProductDto> loadUsersProducts(String email) {
         List<OwnedProduct> products = ownedProductDao.loadUsersProducts(email);
-        List<OwnedProductDto> ownedProductDtos = new OwnedProductConverter().convertToDtoList(products);
+        List<OwnedProductDto> ownedProductDtos = ownedProductConverter.convertToDtoList(products);
         return ownedProductDtos;
     }
     @Override
     public void saveProduct(OwnedProductDto productDto) {
-        OwnedProduct ownedProduct = new OwnedProductConverter().convertToEntity(productDto);
+        OwnedProduct ownedProduct = ownedProductConverter.convertToEntity(productDto);
         ownedProductDao.saveProduct(ownedProduct);
     }
     @Override
@@ -40,7 +43,7 @@ public class OwnedProductServiceImpl implements OwnedProductService {
 
     @Override
     public void deleteUserProduct(OwnedProductDto productDto) {
-        OwnedProduct entity = new OwnedProductConverter().convertToEntity(productDto);
+        OwnedProduct entity = ownedProductConverter.convertToEntity(productDto);
         ownedProductDao.deleteUserProduct(entity);
     }
 
@@ -56,7 +59,7 @@ public class OwnedProductServiceImpl implements OwnedProductService {
     @Override
     public OwnedProductDto loadById(int id) {
         OwnedProduct entity = ownedProductDao.loadById(id);
-        OwnedProductDto productDto = new OwnedProductConverter().convertToDto(entity);
+        OwnedProductDto productDto = ownedProductConverter.convertToDto(entity);
         return productDto;
     }
 

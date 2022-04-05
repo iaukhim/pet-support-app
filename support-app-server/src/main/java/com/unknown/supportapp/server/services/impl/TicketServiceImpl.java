@@ -17,19 +17,22 @@ public class TicketServiceImpl implements TicketService {
 
     private AccountDao accountDao;
 
+    private TicketConverter ticketConverter;
+
     public TicketServiceImpl() {
     }
 
-    public TicketServiceImpl(TicketDao ticketDao, AccountDao accountDao) {
+    public TicketServiceImpl(TicketDao ticketDao, AccountDao accountDao, TicketConverter ticketConverter) {
         this.ticketDao = ticketDao;
         this.accountDao = accountDao;
+        this.ticketConverter = ticketConverter;
     }
 
     @Override
     public List<TicketDto> loadUserTickets(int userId) {
         List<Ticket> tickets = ticketDao.loadUserTickets(userId);
 
-        List<TicketDto> ticketDtos = new TicketConverter().convertToDtoList(tickets);
+        List<TicketDto> ticketDtos = ticketConverter.convertToDtoList(tickets);
         return ticketDtos;
     }
 
@@ -43,46 +46,46 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public List<TicketDto> loadUserOpenedTickets(int userId) {
         List<Ticket> entityList = ticketDao.loadUserOpenedTickets(userId);
-        List<TicketDto> ticketDtos = new TicketConverter().convertToDtoList(entityList);
+        List<TicketDto> ticketDtos = ticketConverter.convertToDtoList(entityList);
         return ticketDtos;
     }
 
     @Override
     public List<TicketDto> loadUserClosedTickets(int userId) {
         List<Ticket> entityList = ticketDao.loadUserClosedTickets(userId);
-        List<TicketDto> ticketDtos = new TicketConverter().convertToDtoList(entityList);
+        List<TicketDto> ticketDtos = ticketConverter.convertToDtoList(entityList);
         return ticketDtos;
     }
 
     @Override
     public void setManagerId(TicketDto ticketDto) {
-        Ticket ticket = new TicketConverter().convertToEntity(ticketDto);
+        Ticket ticket = ticketConverter.convertToEntity(ticketDto);
         ticketDao.setManagerId(ticket);
     }
 
     @Override
     public List<TicketDto> loadUnAssignedTickets() {
         List<Ticket> tickets = ticketDao.loadUnAssignedTickets();
-        List<TicketDto> ticketDtos = new TicketConverter().convertToDtoList(tickets);
+        List<TicketDto> ticketDtos = ticketConverter.convertToDtoList(tickets);
         return ticketDtos;
     }
 
     @Override
     public List<TicketDto> loadManagedTickets(int managerId) {
         List<Ticket> entities = ticketDao.loadManagedTickets(managerId);
-        List<TicketDto> ticketDtos = new TicketConverter().convertToDtoList(entities);
+        List<TicketDto> ticketDtos = ticketConverter.convertToDtoList(entities);
         return ticketDtos;
     }
 
     @Override
     public void save(TicketDto ticket) {
-        Ticket ticketEntity = new TicketConverter().convertToEntity(ticket);
+        Ticket ticketEntity = ticketConverter.convertToEntity(ticket);
         ticketDao.save(ticketEntity);
     }
 
     @Override
     public void update(TicketDto ticketDto) {
-        Ticket ticket = new TicketConverter().convertToEntity(ticketDto);
+        Ticket ticket = ticketConverter.convertToEntity(ticketDto);
         ticketDao.update(ticket);
     }
 

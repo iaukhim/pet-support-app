@@ -15,16 +15,19 @@ public class AccountServiceImpl implements AccountService {
 
     private AccountDao accountDao;
 
+    private AccountConverter accountConverter;
+
     public AccountServiceImpl() {
     }
 
-    public AccountServiceImpl(AccountDao accountDao) {
+    public AccountServiceImpl(AccountDao accountDao, AccountConverter accountConverter) {
         this.accountDao = accountDao;
+        this.accountConverter = accountConverter;
     }
 
     @Override
     public void update(AccountDto accountDto) {
-        Account account = new AccountConverter().convertToEntity(accountDto);
+        Account account = accountConverter.convertToEntity(accountDto);
         accountDao.update(account);
     }
 
@@ -35,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void saveAccount(AccountDto accountDto) {
-        Account account = new AccountConverter().convertToEntity(accountDto);
+        Account account = accountConverter.convertToEntity(accountDto);
         accountDao.save(account);
     }
 
@@ -46,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
         }
         Account account = accountDao.loadByEmail(email);
 
-        AccountDto accountDto = new AccountConverter().convertToDto(account);
+        AccountDto accountDto = accountConverter.convertToDto(account);
         return accountDto;
     }
 
@@ -83,7 +86,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void changePassword(AccountDto accountDto) {
-        Account account = new AccountConverter().convertToEntity(accountDto);
+        Account account = accountConverter.convertToEntity(accountDto);
         accountDao.changePassword(account);
 
     }

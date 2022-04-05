@@ -14,23 +14,26 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductDao productDao;
 
+    private ProductConverter productConverter;
+
     public ProductServiceImpl() {
     }
 
-    public ProductServiceImpl(ProductDao productDao) {
+    public ProductServiceImpl(ProductDao productDao, ProductConverter productConverter) {
         this.productDao = productDao;
+        this.productConverter = productConverter;
     }
 
     @Override
     public List<ProductDto> loadProductsByType(String type) {
         List<Product> products = productDao.loadProductsByType(type);
-        return new ProductConverter().convertToDtoList(products);
+        return productConverter.convertToDtoList(products);
     }
 
     @Override
     public List<ProductDto> loadAllProducts() {
         List<Product> products = productDao.loadAllProducts();
-        return new ProductConverter().convertToDtoList(products);
+        return productConverter.convertToDtoList(products);
     }
 
     @Override

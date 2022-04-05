@@ -12,17 +12,19 @@ import javax.transaction.Transactional;
 public class ManagerServiceImpl implements ManagerService {
 
     private ManagerDao managerDao;
+    private ManagerConverter managerConverter;
 
     public ManagerServiceImpl() {
     }
 
-    public ManagerServiceImpl(ManagerDao managerDao) {
+    public ManagerServiceImpl(ManagerDao managerDao, ManagerConverter managerConverter) {
         this.managerDao = managerDao;
+        this.managerConverter = managerConverter;
     }
 
     @Override
     public boolean login(ManagerDto managerDto) {
-        Manager manager = new ManagerConverter().convertToEntity(managerDto);
+        Manager manager = managerConverter.convertToEntity(managerDto);
 
         boolean result = managerDao.login(manager);
 
