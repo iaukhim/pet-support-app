@@ -1,6 +1,7 @@
 package com.unknown.supportapp.server.entities;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -25,6 +26,14 @@ public class Ticket {
     private String text;
 
     private boolean status;
+
+    @ManyToOne
+    @JoinColumn(name = "starter_id", insertable = false, updatable = false)
+    private Account starter;
+
+    @ManyToOne
+    @JoinColumn(name = "manager_id", insertable = false, updatable = false)
+    private Manager manager;
 
     public Ticket() {
     }

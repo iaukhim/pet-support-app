@@ -1,5 +1,7 @@
 package com.unknown.supportapp.server.entities;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -21,6 +23,9 @@ public class OwnedProduct {
     @Column(name = "serial_number")
     private String serialNumber;
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id", insertable = false, updatable = false)
+    private Account owner;
 
     public OwnedProduct() {
     }
@@ -71,6 +76,14 @@ public class OwnedProduct {
 
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
+    }
+
+    public Account getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Account owner) {
+        this.owner = owner;
     }
 
     @Override

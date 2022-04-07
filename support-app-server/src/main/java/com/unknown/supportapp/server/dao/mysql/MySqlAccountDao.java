@@ -2,6 +2,8 @@ package com.unknown.supportapp.server.dao.mysql;
 
 import com.unknown.supportapp.server.dao.AccountDao;
 import com.unknown.supportapp.server.entities.Account;
+import com.unknown.supportapp.server.entities.Manager;
+import com.unknown.supportapp.server.entities.Ticket;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

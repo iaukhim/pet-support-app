@@ -2,6 +2,7 @@ package com.unknown.supportapp.server.entities;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -26,6 +27,12 @@ public class Account {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
+    @OneToMany(mappedBy = "owner")
+    private List<OwnedProduct> ownedProducts;
+
+    @OneToMany(mappedBy = "starter")
+    private List<Ticket> tickets;
+
     public Account() {
     }
 
@@ -42,6 +49,22 @@ public class Account {
         this.surname = surname;
         this.phoneNumber = phoneNumber;
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
+    }
+
+    public List getOwnedProducts() {
+        return ownedProducts;
+    }
+
+    public void setOwnedProducts(List ownedProducts) {
+        this.ownedProducts = ownedProducts;
     }
 
     public int getId() {

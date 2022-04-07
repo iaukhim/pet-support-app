@@ -1,6 +1,7 @@
 package com.unknown.supportapp.server.entities;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -14,6 +15,9 @@ public class Manager {
     private String email;
 
     private String password;
+
+    @OneToMany(mappedBy = "manager")
+    private List<Ticket> managedTickets;
 
     public Manager() {
     }
@@ -40,6 +44,14 @@ public class Manager {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Ticket> getManagedTickets() {
+        return managedTickets;
+    }
+
+    public void setManagedTickets(List<Ticket> managedTickets) {
+        this.managedTickets = managedTickets;
     }
 
     @Override
